@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>שליחת הודעת TTS</title>
+    <title>שליחת הודעה בהקראה ממוחשבת</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -375,18 +375,25 @@
                 const response = await fetch(apiUrl);
                 const responseText = await response.text();
 
-                if (responseText.includes('responseStatus=OK')) {
+                // Check if the response indicates success
+                // The key change is here: checking for "responseStatus":"OK" (JSON format)
+                // instead of 'responseStatus=OK'
+                if (responseText.includes('"responseStatus":"OK"')) {
                     showStatusMessage('success', 'ההודעה נשלחה בהצלחה!');
-                    // Update display to show credentials are saved and hide the form
+                    // After successful send, ensure credentials form is hidden and status is shown
                     credentialsFormSection.style.display = 'none';
                     credentialsStatusSection.style.display = 'flex';
                     // Optionally clear message and phone fields after successful send
                     // ttsMessageInput.value = '';
                     // phoneNumberInput.value = '';
-                    // updateCharCount();
+                    // updateCharCount(); // Update char count if fields are cleared
                 } else {
+                    // If not OK, show error and the server's response
                     showStatusMessage('error', 'שגיאה בשליחת ההודעה. להלן תשובת השרת:', responseText);
                 }
+
+
+                
             } catch (error) {
                 console.error('Fetch error:', error);
                 showStatusMessage('error', 'אירעה שגיאת רשת בעת ניסיון השליחה. בדוק את חיבור האינטרנט ונסה שוב.', error.message);
