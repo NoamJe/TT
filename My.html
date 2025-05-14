@@ -3,66 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מנהל תזכורות עתידני</title>
+    <title>מנהל התזכורות</title>
     <style>
+        @keyframes subtleGradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         body {
-            background-color: #0a0f1f; /* רקע כהה מאוד, כחול-שחור */
-            color: #00ffcc; /* צבע טקסט ראשי - טורקיז נאון */
-            font-family: 'Courier New', Courier, monospace; /* פונט מונוספייס לאווירה טכנולוגית */
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            background: linear-gradient(270deg, #0a0f1f, #10152f, #0a0f1f);
+            background-size: 600% 600%;
+            animation: subtleGradientShift 30s ease infinite;
         }
 
         .container {
-            background-color: #1a1f36; /* רקע מעט בהיר יותר לאלמנטים מרכזיים */
+            background-color: rgba(26, 31, 54, 0.85); /* רקע חצי שקוף */
+            backdrop-filter: blur(5px); /* אפקט בלור לרקע */
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 0 25px rgba(0, 255, 204, 0.5), 0 0 10px rgba(0, 255, 204, 0.3) inset; /* אפקט זוהר */
+            box-shadow: 0 0 35px rgba(0, 255, 204, 0.4), 0 0 15px rgba(0, 255, 204, 0.2) inset;
             border: 1px solid #00ffcc;
             width: 90%;
             max-width: 700px;
             text-align: center;
+            margin-top: 20px;
         }
 
         h1 {
-            color: #ffffff; /* כותרת ראשית בלבן לניגודיות */
-            text-shadow: 0 0 10px #00ffcc; /* צל טקסט זוהר */
+            color: #ffffff;
+            text-shadow: 0 0 10px #00ffcc;
             margin-bottom: 30px;
         }
 
-        .input-area {
+        .input-area, .password-area {
             margin-bottom: 25px;
             display: flex;
             gap: 10px;
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
         }
 
-        #reminderText {
+        input[type="text"], input[type="password"] {
             flex-grow: 1;
             padding: 12px 15px;
-            background-color: #0a0f1f; /* רקע כהה לתיבת טקסט */
-            color: #e0e0e0; /* צבע טקסט בהיר בתיבה */
-            border: 1px solid #007766; /* גבול בצבע טורקיז עמום */
+            background-color: #0a0f1f;
+            color: #e0e0e0;
+            border: 1px solid #007766;
             border-radius: 8px;
             font-size: 16px;
-            outline: none; /* מניעת גבול ברירת מחדל בפוקוס */
+            outline: none;
+            min-width: 200px; /* Ensure input is not too small */
         }
 
-        #reminderText::placeholder {
+        input[type="text"]::placeholder, input[type="password"]::placeholder {
             color: #555f78;
         }
 
-        #reminderText:focus {
-            border-color: #00ffcc; /* גבול זוהר בפוקוס */
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #00ffcc;
             box-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
         }
 
         button {
             padding: 12px 20px;
-            background-color: #007766; /* רקע כפתור - טורקיז בינוני */
+            background-color: #007766;
             color: #ffffff;
             border: none;
             border-radius: 8px;
@@ -70,27 +82,34 @@
             font-size: 16px;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
             text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            flex-shrink: 0; /* Prevent button from shrinking too much */
         }
 
         button:hover {
-            background-color: #00ffcc; /* צבע רקע בהיר יותר במעבר עכבר */
-            color: #0a0f1f; /* צבע טקסט כהה יותר במעבר עכבר */
+            background-color: #00ffcc;
+            color: #0a0f1f;
             box-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
         }
-
-        #showRemindersBtn {
-            margin-bottom: 20px;
-            width: 100%; /* כפתור הצגת תזכורות ברוחב מלא */
-        }
         
+        button.delete-btn {
+            background-color: #990033; /* צבע אדמדם למחיקה */
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-right: auto; /* דוחף לשמאל בפריט */
+        }
+        button.delete-btn:hover {
+            background-color: #ff3366;
+        }
+
         #remindersListArea {
             margin-top: 20px;
-            background-color: rgba(10, 15, 31, 0.8); /* רקע חצי שקוף לאזור הרשימה */
+            background-color: rgba(10, 15, 31, 0.7);
             padding: 20px;
             border-radius: 10px;
-            border: 1px dashed #007766; /* גבול מקווקו */
+            border: 1px dashed #007766;
             min-height: 100px;
-            text-align: right; /* יישור טקסט לימין עבור הרשימה */
+            text-align: right;
+            /* display: none; Initially hidden, controlled by JS */
         }
 
         #remindersListArea h2 {
@@ -110,36 +129,95 @@
             border-radius: 5px;
             color: #e0e0e0;
             font-size: 15px;
-            word-wrap: break-word; /* שבירת מילים ארוכות */
+            word-wrap: break-word;
+            display: flex; /* For aligning delete button */
+            justify-content: space-between; /* Pushes content and button apart */
+            align-items: center;
+        }
+        
+        .reminder-item-text {
+            flex-grow: 1; /* Text takes available space */
+            text-align: right;
         }
 
-        .reminder-item strong {
-            color: #00ffcc; /* הדגשת שם העוגייה (מזהה התזכורת) */
+        .hidden {
+            display: none !important;
         }
+
+        #password-section p {
+            margin-bottom: 10px;
+        }
+         #resetPasswordBtn {
+            background-color: #555f78;
+            margin-top: 10px;
+        }
+        #resetPasswordBtn:hover {
+            background-color: #777f98;
+        }
+
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>מנהל תזכורות עתידני</h1>
-        
-        <div class="input-area">
-            <input type="text" id="reminderText" placeholder="הזן תזכורת חדשה...">
-            <button id="saveReminderBtn">שמור תזכורת</button>
-        </div>
-        
-        <button id="showRemindersBtn">הצג את כל התזכורות</button>
-        
-        <div id="remindersListArea">
-            <h2>רשימת תזכורות:</h2>
-            <div id="remindersList">
-                <p>עדיין לא נשמרו תזכורות, או שלא נלחץ על כפתור ההצגה.</p>
+        <h1>מנהל התזכורות</h1>
+
+        <div id="password-section">
+            <div id="password-setup-area" class="password-area hidden">
+                <p>זו הפעם הראשונה שלך כאן, או שהסיסמה אופסה. אנא הגדר סיסמה לגישה לתזכורות:</p>
+                <input type="password" id="newPassword" placeholder="הזן סיסמה חדשה">
+                <button id="setPasswordBtn">הגדר סיסמה</button>
             </div>
+            <div id="password-entry-area" class="password-area hidden">
+                <p>אנא הזן את הסיסמה שלך כדי לגשת לתזכורות:</p>
+                <input type="password" id="enteredPassword" placeholder="הזן סיסמה">
+                <button id="loginBtn">הכנס</button>
+            </div>
+        </div>
+
+        <div id="app-content-area" class="hidden">
+            <div class="input-area">
+                <input type="text" id="reminderText" placeholder="הזן תזכורת חדשה ולחץ Enter או על הכפתור...">
+                <button id="saveReminderBtn">שמור תזכורת</button>
+            </div>
+            
+            <button id="toggleRemindersBtn">הצג את כל התזכורות</button>
+            
+            <div id="remindersListArea" class="hidden"> {/* Initially hidden */}
+                <h2>רשימת תזכורות:</h2>
+                <div id="remindersList">
+                    <p>עדיין לא נשמרו תזכורות, או שלא נלחץ על כפתור ההצגה.</p>
+                </div>
+            </div>
+            <button id="resetPasswordBtn">אפס סיסמה</button>
+             <p style="font-size: 0.8em; color: #ffcc00; margin-top: 15px;">
+                <strong>לתשומת ליבך:</strong> הסיסמה נשמרת בדפדפן שלך בצורה מקודדת (לא מוצפנת) והיא אינה מספקת אבטחה חזקה.
+            </p>
         </div>
     </div>
 
     <script>
-        // פונקציה להגדרת עוגייה
+        const APP_PASSWORD_COOKIE = 'app_access_password_v1'; // שם עוגיית הסיסמה
+        const REMINDER_PREFIX = "reminder_item_"; // קידומת לעוגיות התזכורות
+
+        // אזורי ה-HTML
+        const passwordSection = document.getElementById('password-section');
+        const passwordSetupArea = document.getElementById('password-setup-area');
+        const newPasswordInput = document.getElementById('newPassword');
+        const setPasswordBtn = document.getElementById('setPasswordBtn');
+        
+        const passwordEntryArea = document.getElementById('password-entry-area');
+        const enteredPasswordInput = document.getElementById('enteredPassword');
+        const loginBtn = document.getElementById('loginBtn');
+
+        const appContentArea = document.getElementById('app-content-area');
+        const reminderTextElement = document.getElementById('reminderText');
+        const saveReminderBtn = document.getElementById('saveReminderBtn');
+        const toggleRemindersBtn = document.getElementById('toggleRemindersBtn');
+        const remindersListArea = document.getElementById('remindersListArea');
+        const remindersListDiv = document.getElementById('remindersList');
+        const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+
+        // --- פונקציות עזר לעוגיות ---
         function setCookie(name, value, days) {
             let expires = "";
             if (days) {
@@ -147,17 +225,30 @@
                 date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
                 expires = "; expires=" + date.toUTCString();
             }
-            // הוספנו SameSite=Lax לאבטחה טובה יותר
             document.cookie = name + "=" + (encodeURIComponent(value) || "")  + expires + "; path=/; SameSite=Lax";
         }
 
-        // פונקציה לקבלת כל העוגיות כאובייקט
-        function getAllCookies() {
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+            }
+            return null;
+        }
+        
+        function eraseCookie(name) {   
+            document.cookie = name+'=; Max-Age=-99999999; path=/; SameSite=Lax';  
+        }
+
+        function getAllReminderCookies() {
             const cookies = {};
             if (document.cookie && document.cookie !== '') {
                 document.cookie.split(';').forEach(function(cookie) {
-                    const parts = cookie.match(/^\s*([^=]+)=(.*)$/); // תיקון קטן לטיפול ברווחים בתחילת שם העוגייה
-                    if(parts && parts.length === 3) { // לוודא שיש התאמה מלאה
+                    const parts = cookie.match(/^\s*([^=]+)=(.*)$/);
+                    if(parts && parts.length === 3 && parts[1].startsWith(REMINDER_PREFIX)) {
                          cookies[parts[1]] = decodeURIComponent(parts[2]);
                     }
                 });
@@ -165,62 +256,165 @@
             return cookies;
         }
 
-        // פונקציה לשמירת תזכורת
-        function saveReminder() {
-            const reminderTextElement = document.getElementById('reminderText');
-            const reminderText = reminderTextElement.value.trim();
+        // --- לוגיקת סיסמה ---
+        function handlePasswordSetup() {
+            const newPassword = newPasswordInput.value;
+            if (newPassword.length < 4) { // אורך סיסמה מינימלי
+                alert("הסיסמה חייבת להכיל לפחות 4 תווים.");
+                return;
+            }
+            // קידוד פשוט מאוד (לא אבטחה!)
+            setCookie(APP_PASSWORD_COOKIE, btoa(newPassword), 365);
+            alert("הסיסמה הוגדרה בהצלחה!");
+            passwordSetupArea.classList.add('hidden');
+            passwordEntryArea.classList.remove('hidden');
+            newPasswordInput.value = '';
+        }
 
+        function handleLogin() {
+            const enteredPassword = enteredPasswordInput.value;
+            const storedEncodedPassword = getCookie(APP_PASSWORD_COOKIE);
+
+            if (!storedEncodedPassword) { // מצב לא צפוי, אולי העוגייה נמחקה
+                passwordEntryArea.classList.add('hidden');
+                passwordSetupArea.classList.remove('hidden');
+                alert("שגיאה: לא נמצאה סיסמה שמורה. אנא הגדר סיסמה חדשה.");
+                return;
+            }
+
+            try {
+                if (btoa(enteredPassword) === storedEncodedPassword) {
+                    alert("התחברת בהצלחה!");
+                    passwordSection.classList.add('hidden');
+                    appContentArea.classList.remove('hidden');
+                    enteredPasswordInput.value = '';
+                    // אפשר להציג תזכורות אוטומטית או לחכות ללחיצה
+                    // displayReminders(); 
+                } else {
+                    alert("סיסמה שגויה. נסה שוב.");
+                    enteredPasswordInput.value = '';
+                }
+            } catch (e) { // אם btoa נכשל על קלט מסוים
+                alert("שגיאה בעיבוד הסיסמה.");
+            }
+        }
+        
+        function resetPassword() {
+            if (confirm("האם אתה בטוח שברצונך לאפס את הסיסמה? פעולה זו תמחק את הסיסמה הנוכחית ותצטרך להגדיר אחת חדשה.")) {
+                eraseCookie(APP_PASSWORD_COOKIE);
+                appContentArea.classList.add('hidden');
+                passwordSetupArea.classList.remove('hidden');
+                passwordEntryArea.classList.add('hidden'); // הסתר גם את שדה הכניסה
+                alert("הסיסמה אופסה. כעת תוכל להגדיר סיסמה חדשה.");
+            }
+        }
+
+
+        // --- לוגיקת תזכורות ---
+        function saveReminder() {
+            const reminderText = reminderTextElement.value.trim();
             if (reminderText === "") {
                 alert("אנא הזן תוכן לתזכורת.");
                 return;
             }
-
-            // יצירת שם ייחודי לעוגייה באמצעות חותמת זמן
-            const cookieName = "reminder_" + Date.now(); 
-            // נשמור את התזכורת ל-365 ימים
+            const cookieName = REMINDER_PREFIX + Date.now(); 
             setCookie(cookieName, reminderText, 365); 
-            
-            alert("התזכורת נשמרה בהצלחה!");
-            reminderTextElement.value = ""; // ניקוי תיבת הטקסט
-            displayReminders(); // רענון מיידי של הרשימה
+            // alert("התזכורת נשמרה בהצלחה!"); // אפשר להוריד אם יש רענון מיידי
+            reminderTextElement.value = ""; 
+            if (!remindersListArea.classList.contains('hidden')) { // אם הרשימה מוצגת, רענן אותה
+                 displayReminders();
+            }
         }
 
-        // פונקציה להצגת התזכורות
         function displayReminders() {
-            const remindersListDiv = document.getElementById('remindersList');
-            remindersListDiv.innerHTML = ""; // ניקוי הרשימה הקיימת
-
-            const allCookies = getAllCookies();
+            remindersListDiv.innerHTML = ""; 
+            const allCookies = getAllReminderCookies();
             let remindersFound = false;
 
-            for (const cookieName in allCookies) {
-                // נבדוק אם שם העוגייה מתחיל בקידומת שבחרנו 'reminder_'
-                if (cookieName.startsWith("reminder_")) {
-                    remindersFound = true;
-                    const reminderValue = allCookies[cookieName];
-                    
-                    const reminderElement = document.createElement('div');
-                    reminderElement.classList.add('reminder-item');
-                    // אפשר להציג גם את שם העוגייה (המזהה) אם רוצים, למשל למטרות דיבאגינג
-                    // reminderElement.innerHTML = `<strong>${cookieName}:</strong> ${reminderValue}`;
-                    reminderElement.textContent = reminderValue; // הצגה של תוכן התזכורת בלבד
-                    remindersListDiv.appendChild(reminderElement);
-                }
+            const sortedCookieNames = Object.keys(allCookies).sort((a, b) => {
+                // מיון לפי חותמת הזמן בשם העוגייה (מהחדש לישן)
+                return parseInt(b.substring(REMINDER_PREFIX.length)) - parseInt(a.substring(REMINDER_PREFIX.length));
+            });
+
+            for (const cookieName of sortedCookieNames) {
+                remindersFound = true;
+                const reminderValue = allCookies[cookieName];
+                
+                const reminderElement = document.createElement('div');
+                reminderElement.classList.add('reminder-item');
+                
+                const textSpan = document.createElement('span');
+                textSpan.classList.add('reminder-item-text');
+                textSpan.textContent = reminderValue;
+                
+                const deleteButton = document.createElement('button');
+                deleteButton.classList.add('delete-btn');
+                deleteButton.textContent = "מחק";
+                deleteButton.onclick = function() { // שימוש בפונקציית חץ לשמירת ההקשר הנכון של cookieName
+                    deleteReminder(cookieName);
+                };
+                
+                reminderElement.appendChild(deleteButton); // כפתור מחיקה ראשון (משמאל ב-RTL)
+                reminderElement.appendChild(textSpan); // טקסט
+                remindersListDiv.appendChild(reminderElement);
             }
 
             if (!remindersFound) {
                 remindersListDiv.innerHTML = "<p>לא נמצאו תזכורות שמורות.</p>";
             }
         }
+        
+        function deleteReminder(cookieName) {
+            if (confirm(`האם אתה בטוח שברצונך למחוק את התזכורת?`)) {
+                eraseCookie(cookieName);
+                displayReminders(); // רענן את הרשימה
+            }
+        }
 
-        // הוספת מאזיני אירועים לכפתורים
-        document.getElementById('saveReminderBtn').addEventListener('click', saveReminder);
-        document.getElementById('showRemindersBtn').addEventListener('click', displayReminders);
+        function toggleRemindersDisplay() {
+            remindersListArea.classList.toggle('hidden');
+            if (remindersListArea.classList.contains('hidden')) {
+                toggleRemindersBtn.textContent = "הצג את כל התזכורות";
+            } else {
+                toggleRemindersBtn.textContent = "הסתר תזכורות";
+                displayReminders(); // טען והצג את התזכורות כשהאזור נפתח
+            }
+        }
 
-        // הצגת תזכורות קיימות מיד עם טעינת הדף (אופציונלי)
-        // displayReminders(); 
-        // אם אתה רוצה שהרשימה תוצג רק בלחיצה על הכפתור, השאר את השורה למעלה כהערה.
+        // --- אתחול והוספת מאזינים ---
+        window.onload = function() {
+            // בדיקת סיסמה בעת טעינת הדף
+            const storedPassword = getCookie(APP_PASSWORD_COOKIE);
+            if (storedPassword) {
+                passwordEntryArea.classList.remove('hidden');
+                passwordSetupArea.classList.add('hidden');
+            } else {
+                passwordSetupArea.classList.remove('hidden');
+                passwordEntryArea.classList.add('hidden');
+            }
+
+            // מאזינים לסיסמה
+            setPasswordBtn.addEventListener('click', handlePasswordSetup);
+            newPasswordInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter' || event.keyCode === 13) { handlePasswordSetup(); }
+            });
+            loginBtn.addEventListener('click', handleLogin);
+            enteredPasswordInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter' || event.keyCode === 13) { handleLogin(); }
+            });
+            resetPasswordBtn.addEventListener('click', resetPassword);
+
+
+            // מאזינים לתזכורות (יופעלו רק לאחר התחברות)
+            saveReminderBtn.addEventListener('click', saveReminder);
+            reminderTextElement.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter' || event.keyCode === 13) {
+                    event.preventDefault(); 
+                    saveReminder();
+                }
+            });
+            toggleRemindersBtn.addEventListener('click', toggleRemindersDisplay);
+        };
     </script>
-
 </body>
 </html>
