@@ -3,161 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>שליחת הודעה בהקראה ממוחשבת</title>
+    <title>מערכת שליחת הודעות</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #1a1a2e; /* Dark blue-purple background */
+            color: #e0e0e0; /* Light gray text for general content */
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
             min-height: 100vh;
         }
 
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        .page-header {
+            background-color: #162447; /* Dark blue header */
+            color: #f0f0f0; /* Lighter text for header */
             width: 100%;
-            max-width: 600px;
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* More pronounced shadow for dark theme */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-container img {
+            max-height: 60px;
+            width: auto;
+            filter: brightness(0) invert(1); /* Invert colors if logo is dark, for better visibility */
+        }
+
+        .container {
+            background-color: #2c3e50; /* Dark slate blue container */
+            padding: 35px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 650px;
+            box-sizing: border-box;
         }
 
         h2 {
-            color: #007bff;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
+            color: #6699cc; /* Lighter, muted blue for titles */
+            border-bottom: 2px solid #6699cc;
+            padding-bottom: 12px;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            font-size: 1.6em;
+            font-weight: 600;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #bdc3c7; /* Light gray for labels */
+            font-size: 0.95em;
         }
 
         input[type="text"],
         input[type="password"],
         input[type="tel"],
         textarea {
-            width: calc(100% - 22px);
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #566573; /* Darker border */
+            border-radius: 6px;
             box-sizing: border-box;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            font-size: 1em;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            background-color: #34495e; /* Darker input background */
+            color: #ecf0f1; /* Light text in inputs */
         }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder,
+        input[type="tel"]::placeholder,
+        textarea::placeholder {
+            color: #95a5a6; /* Lighter placeholder text */
+        }
+
 
         input[type="text"]:focus,
         input[type="password"]:focus,
         input[type="tel"]:focus,
         textarea:focus {
-            border-color: #007bff;
+            border-color: #5dade2; /* Lighter blue focus border */
+            box-shadow: 0 0 0 0.2rem rgba(93, 173, 226, 0.25); 
             outline: none;
+            background-color: #415a72; /* Slightly lighter background on focus */
         }
 
         textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 100px;
         }
 
         #char-count {
-            font-size: 0.9em;
-            color: #666;
+            font-size: 0.85em;
+            color: #95a5a6; /* Muted light gray */
             text-align: left;
-            margin-top: 5px;
+            margin-top: 6px;
         }
 
         button {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
+            color: #ffffff;
+            padding: 12px 25px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            font-size: 1.05em;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Adjusted shadow for dark theme */
+        }
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        button:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        button:hover {
-            background-color: #0056b3;
+        #send-btn {
+            background-color: #3498db; /* Bright blue for primary button */
+        }
+        #send-btn:hover {
+            background-color: #2980b9; /* Darker blue on hover */
         }
         
         #edit-credentials-btn {
-            background-color: #6c757d;
-            margin-right: 10px; /* For RTL, margin-left if LTR */
+            background-color: #7f8c8d; /* Gray for secondary button */
         }
         #edit-credentials-btn:hover {
-            background-color: #5a6268;
+            background-color: #6c7a7b; /* Darker gray on hover */
         }
 
         #credentials-status-section {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px;
-            background-color: #e9ecef;
-            border-radius: 4px;
-            margin-bottom: 20px;
+            padding: 12px 15px;
+            background-color: #34495e; /* Darker gray background for status */
+            border-radius: 6px;
+            margin-bottom: 25px;
+            border: 1px solid #4a6572;
         }
         #credentials-status-section span {
             font-size: 0.95em;
+            color: #ecf0f1; /* Light text for status */
+            margin-left: 10px;
         }
 
-
         #status-message {
-            margin-top: 25px;
-            padding: 15px;
-            border-radius: 4px;
-            font-size: 1.05em;
-            display: none; /* Hidden by default */
+            margin-top: 30px;
+            padding: 18px 22px;
+            border-radius: 6px;
+            font-size: 1em;
+            display: none; 
+            border-width: 1px;
+            border-style: solid;
         }
 
         #status-message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
+            background-color: #27ae60; /* Darker green */
+            color: #f0fff0; /* Very light green/white text */
+            border-color: #1e8449;
         }
 
         #status-message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block;
+            background-color: #c0392b; /* Darker red */
+            color: #f9ebea; /* Light red/white text */
+            border-color: #a93226;
         }
+         #status-message.info {
+            background-color: #2980b9; /* Darker info blue */
+            color: #eaf2f8; /* Light blue/white text */
+            border-color: #1f618d;
+        }
+
         #status-message pre {
             white-space: pre-wrap;
             word-wrap: break-word;
-            background-color: #f0f0f0;
-            padding: 10px;
+            background-color: rgba(0,0,0,0.2); /* Darker subtle background for pre */
+            padding: 12px;
             border-radius: 4px;
-            margin-top: 10px;
+            margin-top: 12px;
             font-size: 0.9em;
             max-height: 200px;
             overflow-y: auto;
+            border: 1px solid rgba(0,0,0,0.3);
+            color: #f0f0f0; /* Light text for pre content */
         }
 
         /* Responsive adjustments */
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                text-align: center;
+            }
+            .page-header h1 {
+                font-size: 1.8em;
+                margin-bottom: 10px;
+            }
+            .logo-container {
+                margin-top: 10px;
+            }
+            .logo-container img {
+                max-height: 50px;
             }
             .container {
-                padding: 20px;
+                padding: 25px 20px;
+                margin: 0 15px 30px 15px; 
+            }
+            h2 {
+                font-size: 1.4em;
+            }
+            button { /* Make all buttons full width on small screens for consistency */
+                width: 100%;
+                margin-top: 10px;
             }
             #credentials-status-section {
                 flex-direction: column;
@@ -165,17 +249,23 @@
             }
             #credentials-status-section button {
                 margin-top: 10px;
-                width: 100%;
+                width: 100%; /* Make edit button full width in this stacked view */
             }
         }
-
     </style>
 </head>
 <body>
+    <header class="page-header">
+        <h1>מערכת שליחת הודעות TTS</h1>
+        <div class="logo-container">
+            <img src="TG.gif" alt="לוגו החברה">
+        </div>
+    </header>
+
     <div class="container">
         <div id="credentials-management-area">
             <div id="credentials-form-section">
-                <h2>פרטי התחברות</h2>
+                <h2>פרטי התחברות למערכת</h2>
                 <div class="form-group">
                     <label for="system-number">מספר מערכת:</label>
                     <input type="text" id="system-number" name="system-number" required>
@@ -186,21 +276,21 @@
                 </div>
             </div>
             <div id="credentials-status-section" style="display:none;">
-                <span>פרטי ההתחברות שלך שמורים.</span>
-                <button id="edit-credentials-btn">ערוך פרטי התחברות</button>
+                <span>פרטי ההתחברות שלך שמורים במערכת.</span>
+                <button id="edit-credentials-btn" type="button">עריכת פרטים</button>
             </div>
         </div>
 
         <div id="main-form-section">
-            <h2>שליחת הודעת TTS</h2>
+            <h2>שליחת הודעה קולית (TTS)</h2>
             <div class="form-group">
-                <label for="tts-message">הודעה (עד 100 תווים):</label>
-                <textarea id="tts-message" name="tts-message" maxlength="100" rows="4" required></textarea>
+                <label for="tts-message">תוכן ההודעה (עד 100 תווים):</label>
+                <textarea id="tts-message" name="tts-message" maxlength="100" rows="4" required placeholder="הקלד כאן את ההודעה..."></textarea>
                 <div id="char-count">0/100</div>
             </div>
             <div class="form-group">
-                <label for="phone-number">מספר טלפון:</label>
-                <input type="tel" id="phone-number" name="phone-number" required>
+                <label for="phone-number">מספר טלפון היעד:</label>
+                <input type="tel" id="phone-number" name="phone-number" required placeholder="לדוגמה: 0501234567">
             </div>
             <button type="button" id="send-btn">שלח הודעה</button>
         </div>
@@ -220,8 +310,6 @@
                 date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
                 expires = "; expires=" + date.toUTCString();
             }
-            // Added Secure flag, assuming the page will be served over HTTPS for cookie security.
-            // SameSite=Lax is a good default.
             document.cookie = name + "=" + encodeURIComponent(value || "")  + expires + "; path=/; SameSite=Lax; Secure";
         }
 
@@ -254,11 +342,11 @@
 
         function initializeCredentialsDisplay() {
             const savedSystemNumber = getCookie('systemNumber');
-            const savedPassword = getCookie('password');
+            const savedPassword = getCookie('password'); 
 
             if (savedSystemNumber && savedPassword) {
                 systemNumberInput.value = savedSystemNumber;
-                passwordInput.value = savedPassword; // Be cautious with pre-filling passwords if security is paramount
+                passwordInput.value = savedPassword; 
                 credentialsFormSection.style.display = 'none';
                 credentialsStatusSection.style.display = 'flex'; 
             } else {
@@ -271,20 +359,17 @@
             const currentLength = ttsMessageInput.value.length;
             charCountDisplay.textContent = `${currentLength}/100`;
             if (currentLength > 100) {
-                charCountDisplay.style.color = 'red';
-                // Optionally, you could truncate or prevent further input here,
-                // but maxlength attribute already handles prevention.
-                // ttsMessageInput.value = ttsMessageInput.value.substring(0, 100);
-                // charCountDisplay.textContent = `100/100`;
+                charCountDisplay.style.color = '#e74c3c'; /* Brighter red for error in dark theme */
             } else {
-                charCountDisplay.style.color = '#666';
+                charCountDisplay.style.color = '#95a5a6';
             }
         }
         
         function showStatusMessage(type, message, serverResponse = null) {
-            statusMessageDiv.className = ''; // Clear previous classes
-            statusMessageDiv.classList.add(type); // 'success' or 'error' or 'info'
+            statusMessageDiv.className = ''; 
+            statusMessageDiv.classList.add(type); 
             statusTextP.textContent = message;
+
             if (serverResponse) {
                 serverResponsePre.textContent = serverResponse;
                 serverResponsePre.style.display = 'block';
@@ -294,33 +379,29 @@
             statusMessageDiv.style.display = 'block';
         }
 
-        // Event Listeners
         window.addEventListener('load', () => {
             initializeCredentialsDisplay();
-            updateCharCount(); // Initial char count
+            updateCharCount(); 
         });
 
         editCredentialsBtn.addEventListener('click', () => {
-            credentialsFormSection.style.display = 'block';
-            credentialsStatusSection.style.display = 'none';
-            systemNumberInput.focus();
+            credentialsFormSection.style.display = 'block'; 
+            credentialsStatusSection.style.display = 'none'; 
+            systemNumberInput.focus(); 
         });
 
         ttsMessageInput.addEventListener('input', updateCharCount);
 
         sendBtn.addEventListener('click', async () => {
             const systemNumber = systemNumberInput.value.trim();
-            const password = passwordInput.value.trim(); // Consider security implications of handling passwords in JS
+            const password = passwordInput.value.trim(); 
             const ttsMessage = ttsMessageInput.value.trim();
             const phoneNumber = phoneNumberInput.value.trim();
 
-            // Clear previous status messages
             statusMessageDiv.style.display = 'none';
             statusTextP.textContent = '';
             serverResponsePre.style.display = 'none';
 
-
-            // Basic Validation
             if (!systemNumber || !password) {
                 showStatusMessage('error', 'נא למלא מספר מערכת וסיסמה.');
                 if (credentialsFormSection.style.display === 'none') { 
@@ -335,7 +416,7 @@
                 ttsMessageInput.focus();
                 return;
             }
-             if (ttsMessageInput.value.length > 100) { // Check actual value length, not just trimmed
+            if (ttsMessageInput.value.length > 100) { 
                 showStatusMessage('error', 'ההודעה ארוכה מדי (עד 100 תווים).');
                 ttsMessageInput.focus();
                 return;
@@ -345,55 +426,44 @@
                 phoneNumberInput.focus();
                 return;
             }
+            if (!/^\d{9,10}$/.test(phoneNumber)) {
+                showStatusMessage('error', 'מספר הטלפון אינו תקין. יש להזין 9 או 10 ספרות.');
+                phoneNumberInput.focus();
+                return;
+            }
            
-
-            // Save credentials to cookies before sending
-            // This happens regardless of API call success, as per "שומר אותם בעוגיה"
-            setCookie('systemNumber', systemNumber, 365);
-            setCookie('password', password, 365); 
+            setCookie('systemNumber', systemNumber, 365); 
+            setCookie('password', password, 365);       
 
             const isConfirmed = confirm('האם אתה בטוח שברצונך לשלוח את ההודעה?');
             if (!isConfirmed) {
-                return;
+                return; 
             }
 
-            const token = `${systemNumber}:${password}`;
+            const token = `${systemNumber}:${password}`; 
             const params = new URLSearchParams({
                 token: token,
                 ttsMessage: ttsMessage,
-                repeatFile: '8',
-                SendMail: '1',
+                repeatFile: '8', 
+                SendMail: '1',   
                 phones: phoneNumber
             });
 
             const apiUrl = `https://www.call2all.co.il/ym/api/SendTTS?${params.toString()}`;
             
-            // Add a temporary "sending..." message
             showStatusMessage('info', 'שולח הודעה, נא להמתין...');
 
             try {
                 const response = await fetch(apiUrl);
                 const responseText = await response.text();
 
-                // Check if the response indicates success
-                // The key change is here: checking for "responseStatus":"OK" (JSON format)
-                // instead of 'responseStatus=OK'
                 if (responseText.includes('"responseStatus":"OK"')) {
                     showStatusMessage('success', 'ההודעה נשלחה בהצלחה!');
-                    // After successful send, ensure credentials form is hidden and status is shown
                     credentialsFormSection.style.display = 'none';
                     credentialsStatusSection.style.display = 'flex';
-                    // Optionally clear message and phone fields after successful send
-                    // ttsMessageInput.value = '';
-                    // phoneNumberInput.value = '';
-                    // updateCharCount(); // Update char count if fields are cleared
                 } else {
-                    // If not OK, show error and the server's response
                     showStatusMessage('error', 'שגיאה בשליחת ההודעה. להלן תשובת השרת:', responseText);
                 }
-
-
-                
             } catch (error) {
                 console.error('Fetch error:', error);
                 showStatusMessage('error', 'אירעה שגיאת רשת בעת ניסיון השליחה. בדוק את חיבור האינטרנט ונסה שוב.', error.message);
