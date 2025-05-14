@@ -1,3 +1,10 @@
+<button id="deleteAllRemindersBtn">מחק את כל התזכורות</button> ```
+אבל מכיוון שאתה רואה את זה בדף, זה אומר שהדפדפן מפרש את `/* ... */` כטקסט רגיל בהקשר הזה.
+
+אני אכין לך מיד את הקוד המלא והמתוקן, עם ההסרה של ההערה הבעייתית הזו מהפלט הסופי.
+
+**הנה הקוד המלא המתוקן (עם הסרת ההערה הבעייתית):**
+```html
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -91,7 +98,7 @@
             box-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
         }
         
-        button.delete-btn { /* עיצוב לכפתורי מחיקה בודדים וכלליים */
+        button.delete-btn { 
             background-color: #990033;
             padding: 5px 10px;
             font-size: 12px;
@@ -107,12 +114,12 @@
             background-color: #6a6f86;
         }
 
-        #deleteAllRemindersBtn { /* עיצוב ספציפי לכפתור מחיקת הכל */
-            background-color: #cc0000; /* אדום בולט יותר */
+        #deleteAllRemindersBtn { 
+            background-color: #cc0000; 
             margin-top: 10px;
-            width: 100%; /* רוחב מלא */
-            font-size: 1em; /* גודל פונט רגיל לכפתור */
-            padding: 12px 20px; /* ריפוד כמו כפתורים ראשיים */
+            width: 100%; 
+            font-size: 1em; 
+            padding: 12px 20px; 
         }
         #deleteAllRemindersBtn:hover {
             background-color: #ff4d4d;
@@ -259,7 +266,7 @@
             </div>
             
             <button id="toggleRemindersBtn">הצג את כל התזכורות</button>
-            <button id="deleteAllRemindersBtn">מחק את כל התזכורות</button> {/* <<< כפתור חדש */}
+            <button id="deleteAllRemindersBtn">מחק את כל התזכורות</button>
             
             <div id="remindersListArea" class="hidden">
                 <h2>רשימת תזכורות:</h2>
@@ -305,7 +312,7 @@
         const reminderTextElement = document.getElementById('reminderText');
         const saveReminderBtn = document.getElementById('saveReminderBtn');
         const toggleRemindersBtn = document.getElementById('toggleRemindersBtn');
-        const deleteAllRemindersBtn = document.getElementById('deleteAllRemindersBtn'); // <<< משתנה לכפתור החדש
+        const deleteAllRemindersBtn = document.getElementById('deleteAllRemindersBtn');
         const remindersListArea = document.getElementById('remindersListArea');
         const remindersListDiv = document.getElementById('remindersList');
         
@@ -488,7 +495,6 @@
                  displayReminders();
             }
         }
-
         function displayReminders() {
             remindersListDiv.innerHTML = ""; 
             const allCookies = getAllReminderCookies();
@@ -505,7 +511,7 @@
                 textSpan.classList.add('reminder-item-text');
                 textSpan.textContent = reminderValue;
                 const deleteButton = document.createElement('button');
-                deleteButton.classList.add('delete-btn'); // משתמש בקלאס הקיים לכפתורי מחיקה קטנים
+                deleteButton.classList.add('delete-btn'); 
                 deleteButton.textContent = "מחק";
                 deleteButton.onclick = function() {
                     showConfirmation(`האם אתה בטוח שברצונך למחוק את התזכורת: "${reminderValue.substring(0,20)}..."?`, () => {
@@ -533,10 +539,9 @@
             }
         }
 
-        // <<< פונקציה חדשה למחיקת כל התזכורות >>>
         function deleteAllReminders() {
             showConfirmation("האם אתה בטוח שברצונך למחוק את *כל* התזכורות? לא ניתן יהיה לשחזר פעולה זו.", () => {
-                const allReminderCookies = getAllReminderCookies(); // פונקציה קיימת שמחזירה רק עוגיות תזכורת
+                const allReminderCookies = getAllReminderCookies(); 
                 let remindersWereDeleted = false;
                 for (const cookieName in allReminderCookies) {
                     eraseCookie(cookieName);
@@ -546,11 +551,10 @@
                 if (remindersWereDeleted) {
                     showToast("כל התזכורות נמחקו בהצלחה!");
                 } else {
-                    showToast("לא נמצאו תזכורות למחיקה.", "error"); // או 'success' עם הודעה ניטרלית
+                    showToast("לא נמצאו תזכורות למחיקה.", "error"); 
                 }
                 
-                displayReminders(); // רענון התצוגה (תציג רשימה ריקה)
-                // אם רשימת התזכורות הייתה פתוחה, היא תתעדכן. אם סגורה, היא תישאר סגורה.
+                displayReminders(); 
             });
         }
 
@@ -585,7 +589,7 @@
                 }
             });
             toggleRemindersBtn.addEventListener('click', toggleRemindersDisplay);
-            deleteAllRemindersBtn.addEventListener('click', deleteAllReminders); // <<< מאזין לכפתור החדש
+            deleteAllRemindersBtn.addEventListener('click', deleteAllReminders);
         };
     </script>
 </body>
