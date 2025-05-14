@@ -100,6 +100,14 @@
         button.delete-btn:hover {
             background-color: #ff3366;
         }
+        
+        button.cancel-btn { 
+            background-color: #4a4f66;
+        }
+        button.cancel-btn:hover {
+            background-color: #6a6f86;
+        }
+
 
         #remindersListArea {
             margin-top: 20px;
@@ -141,14 +149,13 @@
 
         .hidden { display: none !important; }
 
-        /* Toast Notifications */
         #toast-container {
             position: fixed;
-            bottom: 20px; /* מיקום הודעות בצד שמאל תחתון */
+            bottom: 20px; 
             left: 20px;
-            z-index: 10000; /* מעל הכל */
+            z-index: 10000; 
             display: flex;
-            flex-direction: column-reverse; /* הודעות חדשות יופיעו למעלה */
+            flex-direction: column-reverse; 
             gap: 10px;
         }
 
@@ -158,11 +165,11 @@
             padding: 12px 18px;
             border-radius: 8px;
             box-shadow: 0 3px 12px rgba(0,0,0,0.25);
-            opacity: 0; /* Start hidden for animation */
-            transform: translateX(-100%); /* Start off-screen for animation */
+            opacity: 0; 
+            transform: translateX(-100%); 
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
             min-width: 250px;
-            text-align: left; /* הודעות באנגלית, או ליישר לימין אם הטקסט בעברית ואין בעיית כיווניות */
+            text-align: left; 
         }
         .toast-message.show {
             opacity: 0.95;
@@ -173,7 +180,6 @@
             color: #ffffff;
         }
 
-        /* Confirmation Modal */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -181,8 +187,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 9000; /* מתחת לטוסטים, מעל השאר */
-            opacity: 0; /* Start hidden for animation */
+            z-index: 9000; 
+            opacity: 0; 
             transition: opacity 0.3s ease-in-out;
         }
         .modal-overlay.show {
@@ -195,7 +201,7 @@
             border: 1px solid #00ffcc;
             text-align: center;
             box-shadow: 0 0 30px rgba(0, 255, 204, 0.5);
-            transform: scale(0.7); /* Start smaller for animation */
+            transform: scale(0.7); 
             transition: transform 0.3s ease-in-out;
         }
         .modal-overlay.show .modal-content {
@@ -207,6 +213,9 @@
             color: #e0e0e0;
         }
         .modal-buttons button { margin: 0 12px; }
+        #confirm-no-btn { background-color: #4a4f66; }
+        #confirm-no-btn:hover { background-color: #6a6f86; }
+
 
         #passwordManagementArea { margin-top: 20px; }
         #passwordMgmtBtn { background-color: #3a3f56; }
@@ -223,13 +232,13 @@
                 <p>הגדר סיסמה לגישה לתזכורות:</p>
                 <input type="password" id="newPassword" placeholder="הזן סיסמה חדשה (לפחות 4 תווים)">
                 <button id="setPasswordBtn">הגדר סיסמה</button>
-                <button id="cancelPasswordSetupBtn">ביטול</button>
+                <button id="cancelPasswordSetupBtn" class="cancel-btn">ביטול</button>
             </div>
             <div id="password-entry-area" class="password-area hidden">
                 <p>אנא הזן את הסיסמה שלך כדי לגשת לתזכורות:</p>
                 <input type="password" id="enteredPassword" placeholder="הזן סיסמה">
                 <button id="loginBtn">הכנס</button>
-                 <button id="cancelLoginBtn" class="hidden">ביטול וחזרה</button>
+                <button id="cancelLoginAttemptBtn" class="cancel-btn hidden">ביטול</button>
             </div>
         </div>
 
@@ -270,7 +279,6 @@
         const APP_PASSWORD_COOKIE = 'app_access_password_v1';
         const REMINDER_PREFIX = "reminder_item_";
 
-        // HTML Elements
         const passwordSection = document.getElementById('password-section');
         const passwordSetupArea = document.getElementById('password-setup-area');
         const newPasswordInput = document.getElementById('newPassword');
@@ -280,7 +288,7 @@
         const passwordEntryArea = document.getElementById('password-entry-area');
         const enteredPasswordInput = document.getElementById('enteredPassword');
         const loginBtn = document.getElementById('loginBtn');
-        const cancelLoginBtn = document.getElementById('cancelLoginBtn'); // כפתור ביטול במסך כניסה ראשוני
+        const cancelLoginAttemptBtn = document.getElementById('cancelLoginAttemptBtn');
 
         const appContentArea = document.getElementById('app-content-area');
         const reminderTextElement = document.getElementById('reminderText');
@@ -298,8 +306,6 @@
 
         let currentOnConfirmCallback = null;
 
-
-        // --- Cookie Utilities ---
         function setCookie(name, value, days) {
             let expires = "";
             if (days) {
@@ -335,7 +341,6 @@
             return cookies;
         }
 
-        // --- Toast Notifications ---
         function showToast(message, type = 'success', duration = 2500) {
             const toast = document.createElement('div');
             toast.classList.add('toast-message');
@@ -343,8 +348,7 @@
             toast.textContent = message;
             
             toastContainer.appendChild(toast);
-            // Trigger animation
-            setTimeout(() => toast.classList.add('show'), 10); // Small delay for transition
+            setTimeout(() => toast.classList.add('show'), 10);
 
             setTimeout(() => {
                 toast.classList.remove('show');
@@ -352,7 +356,6 @@
             }, duration);
         }
 
-        // --- Confirmation Modal ---
         function showConfirmation(message, onConfirm) {
             confirmationMessageElement.textContent = message;
             currentOnConfirmCallback = onConfirm;
@@ -366,14 +369,13 @@
                  currentOnConfirmCallback = null;
             }, { once: true });
         }
+        
         confirmYesBtn.addEventListener('click', () => {
             if (currentOnConfirmCallback) currentOnConfirmCallback();
             hideConfirmation();
         });
         confirmNoBtn.addEventListener('click', hideConfirmation);
 
-
-        // --- Password Logic ---
         function updatePasswordMgmtButton() {
             if (getCookie(APP_PASSWORD_COOKIE)) {
                 passwordMgmtBtn.textContent = "הסר הגנת סיסמה";
@@ -383,20 +385,19 @@
         }
 
         passwordMgmtBtn.addEventListener('click', () => {
-            if (getCookie(APP_PASSWORD_COOKIE)) { // Password exists, offer to remove
+            if (getCookie(APP_PASSWORD_COOKIE)) { 
                 showConfirmation("האם אתה בטוח שברצונך להסיר את הגנת הסיסמה? התזכורות יהיו נגישות ללא סיסמה.", () => {
                     eraseCookie(APP_PASSWORD_COOKIE);
                     showToast("הגנת הסיסמה הוסרה.");
                     updatePasswordMgmtButton();
-                    // Ensure app content is visible if it was hidden by password prompt
                     passwordSection.classList.add('hidden');
                     appContentArea.classList.remove('hidden');
                 });
-            } else { // No password, offer to set up
+            } else { 
                 passwordSection.classList.remove('hidden');
                 passwordSetupArea.classList.remove('hidden');
                 passwordEntryArea.classList.add('hidden');
-                appContentArea.classList.add('hidden'); // Hide app content while setting password
+                appContentArea.classList.add('hidden'); 
             }
         });
 
@@ -410,36 +411,36 @@
             showToast("הסיסמה הוגדרה בהצלחה!");
             newPasswordInput.value = '';
             passwordSetupArea.classList.add('hidden');
-            // passwordSection.classList.add('hidden'); // Keep this if we go directly to app
-            appContentArea.classList.remove('hidden'); // Show app content
+            passwordSection.classList.add('hidden'); 
+            appContentArea.classList.remove('hidden');
             updatePasswordMgmtButton();
         });
 
         cancelPasswordSetupBtn.addEventListener('click', () => {
             passwordSetupArea.classList.add('hidden');
             passwordSection.classList.add('hidden');
-            appContentArea.classList.remove('hidden'); // Ensure app content is visible
+            appContentArea.classList.remove('hidden');
             newPasswordInput.value = '';
         });
         
-        cancelLoginBtn.addEventListener('click', () => {
-            passwordEntryArea.classList.add('hidden');
-            passwordSection.classList.add('hidden');
-            appContentArea.classList.remove('hidden'); // This button only appears on initial load if password protected
+        cancelLoginAttemptBtn.addEventListener('click', () => {
             enteredPasswordInput.value = '';
+            showToast("הגישה מוגנת. עליך להזין סיסמה כדי להמשיך.", "error", 3000);
+            appContentArea.classList.add('hidden');
+            passwordSection.classList.remove('hidden');
+            passwordEntryArea.classList.remove('hidden');
         });
-
 
         loginBtn.addEventListener('click', () => {
             const enteredPassword = enteredPasswordInput.value;
             const storedEncodedPassword = getCookie(APP_PASSWORD_COOKIE);
 
-            // This case should ideally not be reached if login is only via password-entry screen
             if (!storedEncodedPassword) { 
-                showToast("שגיאה: לא נמצאה סיסמה שמורה. אנא הגדר סיסמה חדשה דרך 'נהל סיסמה'.", 'error');
+                showToast("שגיאה: לא נמצאה סיסמה שמורה.", 'error');
                 passwordEntryArea.classList.add('hidden');
-                // passwordSection.classList.add('hidden'); // Or show setup
-                appContentArea.classList.remove('hidden'); // Ensure app is usable
+                passwordSection.classList.add('hidden');
+                appContentArea.classList.remove('hidden'); 
+                updatePasswordMgmtButton(); 
                 return;
             }
 
@@ -450,6 +451,7 @@
                     passwordSection.classList.add('hidden');
                     appContentArea.classList.remove('hidden');
                     enteredPasswordInput.value = '';
+                    cancelLoginAttemptBtn.classList.add('hidden'); 
                     updatePasswordMgmtButton();
                 } else {
                     showToast("סיסמה שגויה. נסה שוב.", 'error');
@@ -460,7 +462,6 @@
             }
         });
 
-        // --- Reminder Logic ---
         function saveReminder() {
             const reminderText = reminderTextElement.value.trim();
             if (reminderText === "") {
@@ -475,27 +476,21 @@
                  displayReminders();
             }
         }
-
         function displayReminders() {
             remindersListDiv.innerHTML = ""; 
             const allCookies = getAllReminderCookies();
             let remindersFound = false;
-
             const sortedCookieNames = Object.keys(allCookies).sort((a, b) => {
                 return parseInt(b.substring(REMINDER_PREFIX.length)) - parseInt(a.substring(REMINDER_PREFIX.length));
             });
-
             for (const cookieName of sortedCookieNames) {
                 remindersFound = true;
                 const reminderValue = allCookies[cookieName];
-                
                 const reminderElement = document.createElement('div');
                 reminderElement.classList.add('reminder-item');
-                
                 const textSpan = document.createElement('span');
                 textSpan.classList.add('reminder-item-text');
                 textSpan.textContent = reminderValue;
-                
                 const deleteButton = document.createElement('button');
                 deleteButton.classList.add('delete-btn');
                 deleteButton.textContent = "מחק";
@@ -506,17 +501,14 @@
                         displayReminders();
                     });
                 };
-                
                 reminderElement.appendChild(deleteButton);
                 reminderElement.appendChild(textSpan);
                 remindersListDiv.appendChild(reminderElement);
             }
-
             if (!remindersFound) {
                 remindersListDiv.innerHTML = "<p>לא נמצאו תזכורות שמורות.</p>";
             }
         }
-        
         function toggleRemindersDisplay() {
             remindersListArea.classList.toggle('hidden');
             if (remindersListArea.classList.contains('hidden')) {
@@ -527,25 +519,21 @@
             }
         }
 
-        // --- Initialization & Event Listeners ---
         window.onload = function() {
             const storedPassword = getCookie(APP_PASSWORD_COOKIE);
             if (storedPassword) {
-                // Password exists, lock the app and show login form
                 appContentArea.classList.add('hidden');
                 passwordSection.classList.remove('hidden');
                 passwordEntryArea.classList.remove('hidden');
                 passwordSetupArea.classList.add('hidden');
-                cancelLoginBtn.classList.remove('hidden'); // Show cancel if locked on load
+                cancelLoginAttemptBtn.classList.remove('hidden'); 
             } else {
-                // No password, app is open
                 appContentArea.classList.remove('hidden');
                 passwordSection.classList.add('hidden');
-                cancelLoginBtn.classList.add('hidden');
+                cancelLoginAttemptBtn.classList.add('hidden'); 
             }
-            updatePasswordMgmtButton(); // Set initial text for password management button
+            updatePasswordMgmtButton();
 
-            // Event listeners for password management (always active)
             newPasswordInput.addEventListener('keypress', function(event) {
                 if (event.key === 'Enter' || event.keyCode === 13) { setPasswordBtn.click(); }
             });
@@ -553,7 +541,6 @@
                 if (event.key === 'Enter' || event.keyCode === 13) { loginBtn.click(); }
             });
 
-            // Event listeners for reminders (active when app content is visible)
             saveReminderBtn.addEventListener('click', saveReminder);
             reminderTextElement.addEventListener('keypress', function(event) {
                 if (event.key === 'Enter' || event.keyCode === 13) {
