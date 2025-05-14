@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מנהל תזכורות עתידני</title>
+    <style>
+        body {
+            background-color: #0a0f1f; /* רקע כהה מאוד, כחול-שחור */
+            color: #00ffcc; /* צבע טקסט ראשי - טורקיז נאון */
+            font-family: 'Courier New', Courier, monospace; /* פונט מונוספייס לאווירה טכנולוגית */
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #1a1f36; /* רקע מעט בהיר יותר לאלמנטים מרכזיים */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.5), 0 0 10px rgba(0, 255, 204, 0.3) inset; /* אפקט זוהר */
+            border: 1px solid #00ffcc;
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ffffff; /* כותרת ראשית בלבן לניגודיות */
+            text-shadow: 0 0 10px #00ffcc; /* צל טקסט זוהר */
+            margin-bottom: 30px;
+        }
+
+        .input-area {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+        }
+
+        #reminderText {
+            flex-grow: 1;
+            padding: 12px 15px;
+            background-color: #0a0f1f; /* רקע כהה לתיבת טקסט */
+            color: #e0e0e0; /* צבע טקסט בהיר בתיבה */
+            border: 1px solid #007766; /* גבול בצבע טורקיז עמום */
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none; /* מניעת גבול ברירת מחדל בפוקוס */
+        }
+
+        #reminderText::placeholder {
+            color: #555f78;
+        }
+
+        #reminderText:focus {
+            border-color: #00ffcc; /* גבול זוהר בפוקוס */
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #007766; /* רקע כפתור - טורקיז בינוני */
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        button:hover {
+            background-color: #00ffcc; /* צבע רקע בהיר יותר במעבר עכבר */
+            color: #0a0f1f; /* צבע טקסט כהה יותר במעבר עכבר */
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
+        }
+
+        #showRemindersBtn {
+            margin-bottom: 20px;
+            width: 100%; /* כפתור הצגת תזכורות ברוחב מלא */
+        }
+        
+        #remindersListArea {
+            margin-top: 20px;
+            background-color: rgba(10, 15, 31, 0.8); /* רקע חצי שקוף לאזור הרשימה */
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px dashed #007766; /* גבול מקווקו */
+            min-height: 100px;
+            text-align: right; /* יישור טקסט לימין עבור הרשימה */
+        }
+
+        #remindersListArea h2 {
+            color: #ffffff;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #007766;
+            padding-bottom: 10px;
+        }
+        
+        .reminder-item {
+            background-color: #1a1f36;
+            border: 1px solid #00ffcc;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            color: #e0e0e0;
+            font-size: 15px;
+            word-wrap: break-word; /* שבירת מילים ארוכות */
+        }
+
+        .reminder-item strong {
+            color: #00ffcc; /* הדגשת שם העוגייה (מזהה התזכורת) */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>מנהל תזכורות עתידני</h1>
+        
+        <div class="input-area">
+            <input type="text" id="reminderText" placeholder="הזן תזכורת חדשה...">
+            <button id="saveReminderBtn">שמור תזכורת</button>
+        </div>
+        
+        <button id="showRemindersBtn">הצג את כל התזכורות</button>
+        
+        <div id="remindersListArea">
+            <h2>רשימת תזכורות:</h2>
+            <div id="remindersList">
+                <p>עדיין לא נשמרו תזכורות, או שלא נלחץ על כפתור ההצגה.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // פונקציה להגדרת עוגייה
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            // הוספנו SameSite=Lax לאבטחה טובה יותר
+            document.cookie = name + "=" + (encodeURIComponent(value) || "")  + expires + "; path=/; SameSite=Lax";
+        }
+
+        // פונקציה לקבלת כל העוגיות כאובייקט
+        function getAllCookies() {
+            const cookies = {};
+            if (document.cookie && document.cookie !== '') {
+                document.cookie.split(';').forEach(function(cookie) {
+                    const parts = cookie.match(/^\s*([^=]+)=(.*)$/); // תיקון קטן לטיפול ברווחים בתחילת שם העוגייה
+                    if(parts && parts.length === 3) { // לוודא שיש התאמה מלאה
+                         cookies[parts[1]] = decodeURIComponent(parts[2]);
+                    }
+                });
+            }
+            return cookies;
+        }
+
+        // פונקציה לשמירת תזכורת
+        function saveReminder() {
+            const reminderTextElement = document.getElementById('reminderText');
+            const reminderText = reminderTextElement.value.trim();
+
+            if (reminderText === "") {
+                alert("אנא הזן תוכן לתזכורת.");
+                return;
+            }
+
+            // יצירת שם ייחודי לעוגייה באמצעות חותמת זמן
+            const cookieName = "reminder_" + Date.now(); 
+            // נשמור את התזכורת ל-365 ימים
+            setCookie(cookieName, reminderText, 365); 
+            
+            alert("התזכורת נשמרה בהצלחה!");
+            reminderTextElement.value = ""; // ניקוי תיבת הטקסט
+            displayReminders(); // רענון מיידי של הרשימה
+        }
+
+        // פונקציה להצגת התזכורות
+        function displayReminders() {
+            const remindersListDiv = document.getElementById('remindersList');
+            remindersListDiv.innerHTML = ""; // ניקוי הרשימה הקיימת
+
+            const allCookies = getAllCookies();
+            let remindersFound = false;
+
+            for (const cookieName in allCookies) {
+                // נבדוק אם שם העוגייה מתחיל בקידומת שבחרנו 'reminder_'
+                if (cookieName.startsWith("reminder_")) {
+                    remindersFound = true;
+                    const reminderValue = allCookies[cookieName];
+                    
+                    const reminderElement = document.createElement('div');
+                    reminderElement.classList.add('reminder-item');
+                    // אפשר להציג גם את שם העוגייה (המזהה) אם רוצים, למשל למטרות דיבאגינג
+                    // reminderElement.innerHTML = `<strong>${cookieName}:</strong> ${reminderValue}`;
+                    reminderElement.textContent = reminderValue; // הצגה של תוכן התזכורת בלבד
+                    remindersListDiv.appendChild(reminderElement);
+                }
+            }
+
+            if (!remindersFound) {
+                remindersListDiv.innerHTML = "<p>לא נמצאו תזכורות שמורות.</p>";
+            }
+        }
+
+        // הוספת מאזיני אירועים לכפתורים
+        document.getElementById('saveReminderBtn').addEventListener('click', saveReminder);
+        document.getElementById('showRemindersBtn').addEventListener('click', displayReminders);
+
+        // הצגת תזכורות קיימות מיד עם טעינת הדף (אופציונלי)
+        // displayReminders(); 
+        // אם אתה רוצה שהרשימה תוצג רק בלחיצה על הכפתור, השאר את השורה למעלה כהערה.
+    </script>
+
+</body>
+</html>
