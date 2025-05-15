@@ -78,7 +78,7 @@
 
         input[type="text"],
         input[type="password"],
-        input[type="tel"],
+        input[type="tel"], /* נשאיר לשימוש כללי אם יש צורך, אך לא בטופס הראשי */
         textarea {
             width: 100%;
             padding: 14px;
@@ -113,6 +113,11 @@
             resize: vertical;
             min-height: 100px;
         }
+        /* סגנון ספציפי לשדה מספרי הטלפון החדש */
+        textarea#phone-numbers {
+            min-height: 60px; /* גובה קטן יותר התחלתי */
+        }
+
 
         #char-count {
             font-size: 0.85em;
@@ -289,8 +294,9 @@
                 <div id="char-count">0/100</div>
             </div>
             <div class="form-group">
-                <label for="phone-number">מספר טלפון היעד:</label>
-                <input type="tel" id="phone-number" name="phone-number" required placeholder="לדוגמה: 0501234567">
+                <label for="phone-numbers">מספרי טלפון (הפרד באמצעות פסיק, רווח או שורה חדשה):</label>
+                <textarea id="phone-numbers" name="phone-numbers" rows="3" required placeholder="לדוגמה: 0501234567, 0528889900&#10;0541112233"></textarea>
+                <div id="phone-validation-error" style="color: #e74c3c; font-size: 0.85em; margin-top: 5px; display: none;"></div>
             </div>
             <button type="button" id="send-btn">שלח הודעה</button>
         </div>
@@ -328,7 +334,9 @@
         const systemNumberInput = document.getElementById('system-number');
         const passwordInput = document.getElementById('password');
         const ttsMessageInput = document.getElementById('tts-message');
-        const phoneNumberInput = document.getElementById('phone-number');
+        // const phoneNumberInput = document.getElementById('phone-number'); // הוסר / הוחלף
+        const phoneNumbersInput = document.getElementById('phone-numbers'); // חדש
+        const phoneValidationError = document.getElementById('phone-validation-error'); // חדש
         const charCountDisplay = document.getElementById('char-count');
         const sendBtn = document.getElementById('send-btn');
         const editCredentialsBtn = document.getElementById('edit-credentials-btn');
@@ -396,7 +404,9 @@
             const systemNumber = systemNumberInput.value.trim();
             const password = passwordInput.value.trim(); 
             const ttsMessage = ttsMessageInput.value.trim();
-            const phoneNumber = phoneNumberInput.value.trim();
+            const phoneNumbersRaw = phoneNumbersInput.value.trim(); // שונה
+            phoneValidationError.style.display = 'none'; // חדש - הסתר הודעת שגיאה קודמת
+
 
             statusMessageDiv.style.display = 'none';
             statusTextP.textContent = '';
@@ -421,21 +431,58 @@
                 ttsMessageInput.focus();
                 return;
             }
-            if (!phoneNumber) {
-                showStatusMessage('error', 'נא למלא מספר טלפון.');
-                phoneNumberInput.focus();
+
+            // --- התחלת לוגיקת טיפול במספרים מרובים ---
+            if (!phoneNumbersRaw) {
+                showStatusMessage('error', 'נא למלא לפחות מספר טלפון אחד.');
+                phoneNumbersInput.focus();
                 return;
             }
-            if (!/^\d{9,10}$/.test(phoneNumber)) {
-                showStatusMessage('error', 'מספר הטלפון אינו תקין. יש להזין 9 או 10 ספרות.');
-                phoneNumberInput.focus();
+
+            const phoneList = phoneNumbersRaw.split(/[\s,;\n]+/) // פצל לפי רווח, פסיק, נקודה-פסיק או שורה חדשה
+                .map(phone => phone.trim()) // נקה רווחים מכל מספר
+                .filter(phone => phone.length > 0); // הסר מחרוזות ריקות
+
+            if (phoneList.length === 0) {
+                showStatusMessage('error', 'נא למלא לפחות מספר טלפון אחד תקין.');
+                phoneNumbersInput.focus();
                 return;
             }
+
+            const validPhones = [];
+            const invalidPhones = [];
+            const phoneRegex = /^\d{9,10}$/;
+
+            for (const phone of phoneList) {
+                if (phoneRegex.test(phone)) {
+                    validPhones.push(phone);
+                } else {
+                    invalidPhones.push(phone);
+                }
+            }
+
+            if (invalidPhones.length > 0) {
+                phoneValidationError.textContent = `המספרים הבאים אינם תקינים (נדרשות 9-10 ספרות): ${invalidPhones.join(', ')}`;
+                phoneValidationError.style.display = 'block';
+                phoneNumbersInput.focus();
+                showStatusMessage('error', 'נמצאו מספרי טלפון לא תקינים. אנא תקן אותם.');
+                return;
+            }
+            
+            if (validPhones.length === 0) { // צריך לבדוק אחרי הסינון, לא רק phoneList
+                 showStatusMessage('error', 'לא נמצאו מספרי טלפון תקינים להודעה.');
+                 phoneNumbersInput.focus();
+                 return;
+            }
+
+            const phonesParamValue = validPhones.join(':'); // חבר עם נקודתיים
+            console.log("Sending to phones:", phonesParamValue);
+            // --- סיום לוגיקת טיפול במספרים מרובים ---
             
             setCookie('systemNumber', systemNumber, 365); 
             setCookie('password', password, 365);       
 
-            const isConfirmed = confirm('האם אתה בטוח שברצונך לשלוח את ההודעה?');
+            const isConfirmed = confirm(`האם אתה בטוח שברצונך לשלוח את ההודעה ל-${validPhones.length} מספרים?`);
             if (!isConfirmed) {
                 return; 
             }
@@ -446,7 +493,7 @@
                 ttsMessage: ttsMessage,
                 repeatFile: '8', 
                 SendMail: '1',   
-                phones: phoneNumber
+                phones: phonesParamValue // שונה
             });
 
             const apiUrl = `https://www.call2all.co.il/ym/api/SendTTS?${params.toString()}`;
@@ -456,16 +503,14 @@
             try {
                 const response = await fetch(apiUrl);
                 const responseText = await response.text();
-                console.log("Server Response Text (SendTTS):", responseText); // לניפוי באגים
+                console.log("Server Response Text (SendTTS):", responseText);
 
-                // --- תחילת קטע התיקון ---
                 try {
-                    const responseData = JSON.parse(responseText); // נסה לפרסס את התשובה כ-JSON
+                    const responseData = JSON.parse(responseText);
 
                     if (responseData.responseStatus === "OK") {
                         let successMessage = 'ההודעה נשלחה בהצלחה!';
 
-                        // הצגת פרטי חיוב ויחידות למשתמש (אם קיימים)
                         if (responseData.billing !== undefined && responseData.units !== undefined) {
                             successMessage += ` עלות: ${responseData.billing}, יתרת יחידות: ${responseData.units}.`;
                         } else if (responseData.billing !== undefined) {
@@ -478,7 +523,6 @@
                         credentialsFormSection.style.display = 'none';
                         credentialsStatusSection.style.display = 'flex';
 
-                        // שמירת CampaignId אחרון בלבד בעוגיות
                         if (responseData.CampaignId) {
                             const campaignIdCookieName = 'lastCampaignId'; 
                             setCookie(campaignIdCookieName, responseData.CampaignId, 365); 
@@ -488,19 +532,14 @@
                         }
 
                     } else {
-                        // אם responseStatus אינו "OK", הצג את כל התשובה מהשרת
                         showStatusMessage('error', 'שגיאה בשליחת ההודעה. להלן תשובת השרת:', JSON.stringify(responseData));
                     }
                 } catch (jsonError) {
-                    // אם תגובת השרת אינה JSON תקין
                     console.warn('תגובת השרת אינה בפורמט JSON תקין. הצגת טקסט גולמי.', responseText, jsonError);
-                    // מכיוון שהבדיקה שלך הראתה שהשרת כן מחזיר JSON, אם נגיע לכאן זה כנראה מצב שגיאה לא צפוי מהשרת.
-                    // אפשר להציג את הטקסט הגולמי כשגיאה.
                     showStatusMessage('error', 'שגיאה בפענוח תגובת השרת (לא JSON תקין). להלן התגובה הגולמית:', responseText);
                 }
-                // --- סוף קטע התיקון ---
 
-            } catch (error) { // זה ה-catch של ה-fetch
+            } catch (error) {
                 console.error('Fetch error:', error);
                 showStatusMessage('error', 'אירעה שגיאת רשת בעת ניסיון השליחה. בדוק את חיבור האינטרנט ונסה שוב.', error.message);
             }
