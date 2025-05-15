@@ -458,57 +458,55 @@
                 const responseText = await response.text();
 
                 // --- תחילת קטע התיקון ---
-                try {
-                    const responseData = JSON.parse(responseText); // נסה לפרסס את התשובה כ-JSON
+                // מכיוון שתגובת השרת אינה JSON, נעבוד ישירות עם responseText
+                console.log("Server Response Text:", responseText); // לניפוי באגים
 
-                    if (responseData.responseStatus === "OK") {
-                        let successMessage = 'ההודעה נשלחה בהצלחה!';
+                if (responseText.includes('"responseStatus":"OK"')) {
+                    let successMessage = 'ההודעה נשלחה בהצלחה!';
 
-                        // הצגת פרטי חיוב ויחידות למשתמש (אם קיימים)
-                        if (responseData.billing !== undefined && responseData.units !== undefined) {
-                            successMessage += ` עלות: ${responseData.billing}, יתרת יחידות: ${responseData.units}.`;
-                        } else if (responseData.billing !== undefined) {
-                            successMessage += ` עלות: ${responseData.billing}.`;
-                        } else if (responseData.units !== undefined) {
-                            successMessage += ` יתרת יחידות: ${responseData.units}.`;
-                        }
-                        
-                        showStatusMessage('success', successMessage);
-                        credentialsFormSection.style.display = 'none';
-                        credentialsStatusSection.style.display = 'flex';
+                    // חילוץ billing באמצעות RegEx
+                    const billingMatch = responseText.match(/"billing"\s*:\s*([0-9.]+)/);
+                    const billingValue = billingMatch && billingMatch[1] ? parseFloat(billingMatch[1]) : undefined;
+                    console.log("Billing Match:", billingMatch, "Value:", billingValue);
 
-                        // שמירת CampaignId אחרון בלבד בעוגיות
-                        if (responseData.CampaignId) {
-                            const campaignIdCookieName = 'lastCampaignId'; // שם חדש לעוגייה
-                            setCookie(campaignIdCookieName, responseData.CampaignId, 365); // שמירה ל-365 ימים
-                            console.log('CampaignId אחרון נשמר בעוגייה:', responseData.CampaignId);
-                        }
 
-                    } else {
-                        // אם responseStatus אינו "OK", הצג את כל התשובה מהשרת
-                        showStatusMessage('error', 'שגיאה בשליחת ההודעה. להלן תשובת השרת:', JSON.stringify(responseData));
+                    // חילוץ units באמצעות RegEx
+                    const unitsMatch = responseText.match(/"units"\s*:\s*"([^"]+)"/);
+                    const unitsValue = unitsMatch && unitsMatch[1] ? unitsMatch[1] : undefined;
+                    console.log("Units Match:", unitsMatch, "Value:", unitsValue);
+
+                    
+                    if (billingValue !== undefined && unitsValue !== undefined) {
+                        successMessage += ` עלות: ${billingValue}, יתרת יחידות: ${unitsValue}.`;
+                    } else if (billingValue !== undefined) {
+                        successMessage += ` עלות: ${billingValue}.`;
+                    } else if (unitsValue !== undefined) {
+                        successMessage += ` יתרת יחידות: ${unitsValue}.`;
                     }
-                } catch (jsonError) {
-                    // אם תגובת השרת אינה JSON תקין
-                    console.warn('תגובת השרת אינה בפורמט JSON תקין. בודק כטקסט רגיל.', responseText, jsonError);
-                    if (responseText.includes('"responseStatus":"OK"')) { // Fallback
-                        showStatusMessage('success', 'ההודעה נשלחה בהצלחה! (תגובת שרת לא פוענחה כ-JSON מלא)');
-                        credentialsFormSection.style.display = 'none';
-                        credentialsStatusSection.style.display = 'flex';
-                        // כאן אפשר לנסות לחלץ CampaignId מה-responseText אם זה קריטי, אבל זה פחות אמין
-                        // לדוגמה, אם אתה יודע שה-CampaignId הוא תמיד מספר אחרי מחרוזת מסוימת:
-                        // const campaignIdMatch = responseText.match(/"CampaignId":"(\d+)"/);
-                        // if (campaignIdMatch && campaignIdMatch[1]) {
-                        //    setCookie('lastCampaignId', campaignIdMatch[1], 365);
-                        //    console.log('CampaignId אחרון נשמר בעוגייה (מ-fallback):', campaignIdMatch[1]);
-                        // }
+                    
+                    showStatusMessage('success', successMessage);
+                    credentialsFormSection.style.display = 'none';
+                    credentialsStatusSection.style.display = 'flex';
+
+                    // חילוץ CampaignId באמצעות RegEx ושמירה בעוגייה
+                    const campaignIdMatch = responseText.match(/"CampaignId"\s*:\s*"([^"]+)"/);
+                    console.log("CampaignId Match:", campaignIdMatch);
+                    if (campaignIdMatch && campaignIdMatch[1]) {
+                        const campaignIdFromText = campaignIdMatch[1];
+                        const campaignIdCookieName = 'lastCampaignId'; 
+                        setCookie(campaignIdCookieName, campaignIdFromText, 365); 
+                        console.log('CampaignId אחרון נשמר בעוגייה (מ-responseText):', campaignIdFromText);
                     } else {
-                        showStatusMessage('error', 'שגיאה בשליחת ההודעה. להלן תשובת השרת (לא בפורמט JSON תקין):', responseText);
+                        console.warn('לא הצלחנו לחלץ CampaignId מתגובת השרת.');
                     }
+
+                } else {
+                    // אם responseStatus אינו "OK", הצג את כל התשובה מהשרת
+                    showStatusMessage('error', 'שגיאה בשליחת ההודעה. להלן תשובת השרת:', responseText);
                 }
                 // --- סוף קטע התיקון ---
 
-            } catch (error) {
+            } catch (error) { // זה ה-catch של ה-fetch
                 console.error('Fetch error:', error);
                 showStatusMessage('error', 'אירעה שגיאת רשת בעת ניסיון השליחה. בדוק את חיבור האינטרנט ונסה שוב.', error.message);
             }
