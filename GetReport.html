@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דוח קמפיין</title>
+    <link rel="icon" href="TGi.png" type="image/png"> <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            background-color: #162447;
+            color: #f0f0f0;
+            width: 100%;
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 700;
+        }
+
+        .logo-container img {
+            max-height: 60px;
+            width: auto;
+        }
+
+        .container {
+            background-color: #2c3e50;
+            padding: 35px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 650px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            color: #6699cc;
+            border-bottom: 2px solid #6699cc;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 1.6em;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #bdc3c7;
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #566573;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+            background-color: #34495e;
+            color: #ecf0f1;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #5dade2;
+            box-shadow: 0 0 0 0.2rem rgba(93, 173, 226, 0.25); 
+            outline: none;
+            background-color: #415a72;
+        }
+
+        button {
+            color: #ffffff;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.05em;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        button:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        #fetch-report-btn {
+            background-color: #27ae60; /* Green for fetch button */
+        }
+        #fetch-report-btn:hover {
+            background-color: #229954; 
+        }
+        
+        #edit-credentials-btn {
+            background-color: #7f8c8d;
+        }
+        #edit-credentials-btn:hover {
+            background-color: #6c7a7b;
+        }
+
+        #credentials-status-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background-color: #34495e;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            border: 1px solid #4a6572;
+        }
+        #credentials-status-section span {
+            font-size: 0.95em;
+            color: #ecf0f1;
+            margin-left: 10px; /* RTL: margin-right */
+        }
+
+        #status-message {
+            margin-top: 30px;
+            padding: 18px 22px;
+            border-radius: 6px;
+            font-size: 1em;
+            display: none; 
+            border-width: 1px;
+            border-style: solid;
+            text-align: right; /* RTL: align text to right */
+        }
+
+        #status-message.success {
+            background-color: #27ae60;
+            color: #f0fff0;
+            border-color: #1e8449;
+        }
+
+        #status-message.error {
+            background-color: #c0392b;
+            color: #f9ebea;
+            border-color: #a93226;
+        }
+         #status-message.info {
+            background-color: #2980b9;
+            color: #eaf2f8;
+            border-color: #1f618d;
+        }
+
+        #status-message pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 12px;
+            font-size: 0.9em;
+            max-height: 400px; /* Increased height for report */
+            overflow-y: auto;
+            border: 1px solid rgba(0,0,0,0.3);
+            color: #f0f0f0;
+            text-align: left; /* Keep pre content LTR if it's JSON/code */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                text-align: center;
+            }
+            .page-header h1 {
+                font-size: 1.8em;
+                margin-bottom: 10px;
+            }
+            .logo-container {
+                margin-top: 10px;
+            }
+            .logo-container img {
+                max-height: 50px;
+            }
+            .container {
+                padding: 25px 20px;
+                margin: 0 15px 30px 15px; 
+            }
+            h2 {
+                font-size: 1.4em;
+            }
+            button {
+                width: 100%;
+                margin-top: 10px;
+            }
+             #credentials-status-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            #credentials-status-section button {
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <h1>הצגת דוח קמפיין</h1>
+        <div class="logo-container">
+            <img src="TG.gif" alt="לוגו החברה"> </div>
+    </header>
+
+    <div class="container">
+        <div id="credentials-management-area">
+            <div id="credentials-form-section">
+                <h2>פרטי התחברות למערכת</h2>
+                <div class="form-group">
+                    <label for="system-number">מספר מערכת:</label>
+                    <input type="text" id="system-number" name="system-number" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">סיסמה:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+            </div>
+            <div id="credentials-status-section" style="display:none;">
+                <span>פרטי ההתחברות שלך שמורים במערכת.</span>
+                <button id="edit-credentials-btn" type="button">עריכת פרטים</button>
+            </div>
+        </div>
+
+        <div id="report-section">
+            <h2>דוח קמפיין אחרון</h2>
+            <p>ה-CampaignID האחרון שנמצא: <strong id="campaign-id-display">לא נמצא</strong></p>
+            <button type="button" id="fetch-report-btn">הצג דוח קמפיין</button>
+        </div>
+
+        <div id="status-message">
+            <p id="status-text"></p>
+            <pre id="server-response-text" style="display:none;"></pre>
+        </div>
+    </div>
+
+    <script>
+        // Cookie helper functions (זהות לאלו מהדף הקודם)
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + encodeURIComponent(value || "")  + expires + "; path=/; SameSite=Lax; Secure";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+            }
+            return null;
+        }
+
+        // DOM Elements
+        const systemNumberInput = document.getElementById('system-number');
+        const passwordInput = document.getElementById('password');
+        const fetchReportBtn = document.getElementById('fetch-report-btn');
+        const editCredentialsBtn = document.getElementById('edit-credentials-btn');
+        
+        const credentialsFormSection = document.getElementById('credentials-form-section');
+        const credentialsStatusSection = document.getElementById('credentials-status-section');
+        const campaignIdDisplay = document.getElementById('campaign-id-display');
+        
+        const statusMessageDiv = document.getElementById('status-message');
+        const statusTextP = document.getElementById('status-text');
+        const serverResponsePre = document.getElementById('server-response-text');
+
+        function initializeCredentialsDisplay() {
+            const savedSystemNumber = getCookie('systemNumber');
+            const savedPassword = getCookie('password'); 
+
+            if (savedSystemNumber && savedPassword) {
+                systemNumberInput.value = savedSystemNumber;
+                passwordInput.value = savedPassword; 
+                credentialsFormSection.style.display = 'none';
+                credentialsStatusSection.style.display = 'flex'; 
+            } else {
+                credentialsFormSection.style.display = 'block';
+                credentialsStatusSection.style.display = 'none';
+            }
+        }
+        
+        function showStatusMessage(type, message, serverResponse = null) {
+            statusMessageDiv.className = ''; 
+            statusMessageDiv.classList.add(type); 
+            statusTextP.textContent = message;
+
+            if (serverResponse) {
+                // ננסה לפרסס את ה-JSON ולהציג אותו בצורה יפה אם אפשר
+                try {
+                    const jsonObj = JSON.parse(serverResponse);
+                    serverResponsePre.textContent = JSON.stringify(jsonObj, null, 2); // הצגה עם הזחה
+                } catch (e) {
+                    serverResponsePre.textContent = serverResponse; // אם זה לא JSON, נציג כטקסט רגיל
+                }
+                serverResponsePre.style.display = 'block';
+            } else {
+                serverResponsePre.style.display = 'none';
+            }
+            statusMessageDiv.style.display = 'block';
+        }
+
+        function displayLastCampaignId() {
+            const lastCampaignIdFromCookie = getCookie('lastCampaignId');
+            if (lastCampaignIdFromCookie) {
+                campaignIdDisplay.textContent = lastCampaignIdFromCookie;
+            } else {
+                campaignIdDisplay.textContent = "לא נמצא CampaignId שמור.";
+            }
+        }
+
+        window.addEventListener('load', () => {
+            initializeCredentialsDisplay();
+            displayLastCampaignId();
+        });
+
+        editCredentialsBtn.addEventListener('click', () => {
+            credentialsFormSection.style.display = 'block'; 
+            credentialsStatusSection.style.display = 'none'; 
+            systemNumberInput.focus(); 
+        });
+
+        fetchReportBtn.addEventListener('click', async () => {
+            const systemNumber = systemNumberInput.value.trim();
+            const password = passwordInput.value.trim();
+            let campaignId = getCookie('lastCampaignId');
+
+            statusMessageDiv.style.display = 'none';
+            statusTextP.textContent = '';
+            serverResponsePre.style.display = 'none';
+
+            if (!systemNumber || !password) {
+                showStatusMessage('error', 'נא למלא מספר מערכת וסיסמה תחילה.');
+                 if (credentialsFormSection.style.display === 'none') { 
+                    credentialsFormSection.style.display = 'block';
+                    credentialsStatusSection.style.display = 'none';
+                }
+                systemNumberInput.focus();
+                return;
+            }
+
+            if (!campaignId) {
+                showStatusMessage('error', 'לא נמצא CampaignId שמור בעוגיות. אנא בצע שליחת הודעה קודם.');
+                return;
+            }
+
+            // שמירת פרטי התחברות אם הוזנו ידנית והיו חסרים
+            setCookie('systemNumber', systemNumber, 365); 
+            setCookie('password', password, 365);
+            // אם פרטי ההתחברות נערכו, עדכן את התצוגה
+            if (credentialsFormSection.style.display === 'block') {
+                credentialsFormSection.style.display = 'none';
+                credentialsStatusSection.style.display = 'flex';
+            }
+
+
+            const prefixToRemove = "Start-YA-";
+            if (campaignId.startsWith(prefixToRemove)) {
+                campaignId = campaignId.substring(prefixToRemove.length);
+            }
+            
+            const token = `${systemNumber}:${password}`;
+            const params = new URLSearchParams({
+                token: token,
+                CampaignID: campaignId // שימו לב שהפרמטר הוא CampaignID עם I גדולה לפי התיעוד הכללי של APIים כאלה
+            });
+
+            const apiUrl = `https://www.call2all.co.il/ym/api/ViewCampaignReports?${params.toString()}`;
+            
+            showStatusMessage('info', 'טוען דוח קמפיין, נא להמתין...');
+
+            try {
+                const response = await fetch(apiUrl);
+                const responseText = await response.text(); // קודם כל נקבל כטקסט
+
+                // נבדוק אם התגובה מהשרת מכילה סטטוס תקין כלשהו לפני שנציג אותה כהצלחה.
+                // ה-API הזה עשוי להחזיר JSON גם במקרה של שגיאה עם סטטוס HTTP 200.
+                // נניח שתשובה תקינה היא JSON.
+                try {
+                    const responseData = JSON.parse(responseText);
+                    if (responseData.responseStatus && responseData.responseStatus !== "OK") {
+                         // אם יש שדה responseStatus והוא לא OK, נתייחס לזה כשגיאה מה-API
+                        showStatusMessage('error', `שגיאה בקבלת הדוח (סטטוס API: ${responseData.responseStatus}). תשובת השרת:`, responseText);
+                    } else if (Object.keys(responseData).length === 0 && responseData.constructor === Object) {
+                        // אם התשובה היא אובייקט JSON ריק, ייתכן וזה מצב שצריך לטפל בו
+                        showStatusMessage('info', 'התקבלה תשובה ריקה מהשרת עבור דוח הקמפיין.', responseText);
+                    }
+                    else {
+                        // אם זה JSON תקין (או לפחות לא נראה כשגיאה מפורשת מה-API)
+                        showStatusMessage('success', 'דוח הקמפיין התקבל בהצלחה:', responseText);
+                    }
+                } catch (e) {
+                    // אם התשובה אינה JSON, נציג אותה כטקסט רגיל
+                    // זה יכול לקרות אם יש שגיאה ברמת השרת לפני שה-API מעבד את הבקשה
+                    if (response.ok) { // סטטוס HTTP 200-299
+                       showStatusMessage('success', 'דוח הקמפיין התקבל (תצוגת טקסט גולמי):', responseText);
+                    } else {
+                       showStatusMessage('error', `שגיאה בטעינת הדוח (סטטוס HTTP: ${response.status}). תשובת השרת:`, responseText);
+                    }
+                }
+
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showStatusMessage('error', 'אירעה שגיאת רשת בעת ניסיון טעינת הדוח. בדוק את חיבור האינטרנט ונסה שוב.', error.message);
+            }
+        });
+    </script>
+</body>
+</html>
