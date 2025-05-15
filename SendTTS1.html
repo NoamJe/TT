@@ -464,9 +464,9 @@
                     if (responseData.responseStatus === "OK") {
                         let successMessage = 'ההודעה נשלחה בהצלחה!';
 
-                        // הצגת פרטי חיוב ויחידות למשתמש
+                        // הצגת פרטי חיוב ויחידות למשתמש (אם קיימים)
                         if (responseData.billing !== undefined && responseData.units !== undefined) {
-                            successMessage += ` עלות: ${responseData.billing} יחידות, מתוך: ${responseData.units} יחידות שהיו לכם במערכת.`;
+                            successMessage += ` עלות: ${responseData.billing}, יתרת יחידות: ${responseData.units}.`;
                         } else if (responseData.billing !== undefined) {
                             successMessage += ` עלות: ${responseData.billing}.`;
                         } else if (responseData.units !== undefined) {
@@ -477,40 +477,31 @@
                         credentialsFormSection.style.display = 'none';
                         credentialsStatusSection.style.display = 'flex';
 
-                        // שמירת CampaignId בעוגיות (כרשימה מצטברת)
+                        // שמירת CampaignId אחרון בלבד בעוגיות
                         if (responseData.CampaignId) {
-                            const campaignIdCookieName = 'campaignIdsList';
-                            let existingCampaignIds = [];
-                            const campaignIdsCookie = getCookie(campaignIdCookieName);
-
-                            if (campaignIdsCookie) {
-                                try {
-                                    existingCampaignIds = JSON.parse(campaignIdsCookie);
-                                    if (!Array.isArray(existingCampaignIds)) { // ודא שזה מערך
-                                        existingCampaignIds = [];
-                                    }
-                                } catch (e) {
-                                    console.warn('שגיאה בפענוח עוגיית CampaignIds, מאתחל מחדש:', e);
-                                    existingCampaignIds = []; // אם הפירסור נכשל, אתחל מחדש
-                                }
-                            }
-                            
-                            existingCampaignIds.push(responseData.CampaignId);
-                            setCookie(campaignIdCookieName, JSON.stringify(existingCampaignIds), 365); // שמירה ל-365 ימים
-                            console.log('CampaignId חדש נוסף לעוגייה:', responseData.CampaignId);
-                            console.log('רשימת CampaignIds מעודכנת בעוגייה:', existingCampaignIds);
+                            const campaignIdCookieName = 'lastCampaignId'; // שם חדש לעוגייה
+                            setCookie(campaignIdCookieName, responseData.CampaignId, 365); // שמירה ל-365 ימים
+                            console.log('CampaignId אחרון נשמר בעוגייה:', responseData.CampaignId);
                         }
 
                     } else {
-                        const serverErrorMessage = responseData.message || responseData.ErrorDescription || responseData.errorMessage || JSON.stringify(responseData);
-                        showStatusMessage('error', 'שגיאה בשליחת ההודעה. להלן תשובת השרת:', serverErrorMessage);
+                        // אם responseStatus אינו "OK", הצג את כל התשובה מהשרת
+                        showStatusMessage('error', 'שגיאה בשליחת ההודעה. להלן תשובת השרת:', JSON.stringify(responseData));
                     }
                 } catch (jsonError) {
+                    // אם תגובת השרת אינה JSON תקין
                     console.warn('תגובת השרת אינה בפורמט JSON תקין. בודק כטקסט רגיל.', responseText, jsonError);
                     if (responseText.includes('"responseStatus":"OK"')) { // Fallback
                         showStatusMessage('success', 'ההודעה נשלחה בהצלחה! (תגובת שרת לא פוענחה כ-JSON מלא)');
                         credentialsFormSection.style.display = 'none';
                         credentialsStatusSection.style.display = 'flex';
+                        // כאן אפשר לנסות לחלץ CampaignId מה-responseText אם זה קריטי, אבל זה פחות אמין
+                        // לדוגמה, אם אתה יודע שה-CampaignId הוא תמיד מספר אחרי מחרוזת מסוימת:
+                        // const campaignIdMatch = responseText.match(/"CampaignId":"(\d+)"/);
+                        // if (campaignIdMatch && campaignIdMatch[1]) {
+                        //    setCookie('lastCampaignId', campaignIdMatch[1], 365);
+                        //    console.log('CampaignId אחרון נשמר בעוגייה (מ-fallback):', campaignIdMatch[1]);
+                        // }
                     } else {
                         showStatusMessage('error', 'שגיאה בשליחת ההודעה. להלן תשובת השרת (לא בפורמט JSON תקין):', responseText);
                     }
