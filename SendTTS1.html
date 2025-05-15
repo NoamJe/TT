@@ -466,7 +466,7 @@
 
                         // הצגת פרטי חיוב ויחידות למשתמש
                         if (responseData.billing !== undefined && responseData.units !== undefined) {
-                            successMessage += ` עלות: ${responseData.billing}, יתרת יחידות: ${responseData.units}.`;
+                            successMessage += ` עלות: ${responseData.billing} יחידות, מתוך: ${responseData.units} יחידות שהיו לכם במערכת.`;
                         } else if (responseData.billing !== undefined) {
                             successMessage += ` עלות: ${responseData.billing}.`;
                         } else if (responseData.units !== undefined) {
