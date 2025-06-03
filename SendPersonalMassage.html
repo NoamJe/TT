@@ -8,14 +8,16 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap');
 
-        :root {
+:root {
             /* Dark Theme Palette with Gold/Silver Accents */
             --dark-bg-1: #0a0a0f; /* Deep dark blue/black */
             --dark-bg-2: #10101a; /* Darker blue/grey */
             --dark-bg-3: #1a1a2a; /* Medium dark blue/grey */
             --dark-bg-4: #05050A; /* Very dark blue/black */
             
-            --particle-color: rgba(212, 175, 55, 0.08); /* Subtle gold particles */
+            /* Updated Particle Colors */
+            --particle-color-gold-bright: rgba(212, 175, 55, 0.15); /* זהב בהיר יותר עם שקיפות מופחתת */
+            --particle-color-silver-bright: rgba(192, 192, 192, 0.12); /* כסף בהיר עם שקיפות מופחתת */
             
             --primary-gold: #D4AF37; /* Gold for main actions */
             --primary-gold-darker: #b89b30; /* Darker gold for hover */
@@ -43,6 +45,24 @@
             --loading-text: #b0c4de; /* Lighter loading text */
             --loading-border: #4a6fa5; /* Loading border */
         }
+
+        /* ... (שאר כללי ה-CSS נשארים זהים עד שמגיעים לכללים של החלקיקים) ... */
+
+        .moving-particles-layer li {
+            position: absolute; display: block;
+            /* ברירת מחדל לחלקיקי זהב בהירים */
+            background-color: var(--particle-color-gold-bright); 
+            animation: particle-animation linear infinite;
+            bottom: -80px;
+            border-radius: 50%;
+        }
+        
+        /* כל חלקיק שני (זוגי) יהיה בצבע כסף בהיר */
+        .moving-particles-layer li:nth-child(2n) {
+             background-color: var(--particle-color-silver-bright);
+        }
+
+        /* ... (שאר כללי ה-CSS ממשיכים כרגיל) ... */
 
         body {
             font-family: 'Rubik', sans-serif;
