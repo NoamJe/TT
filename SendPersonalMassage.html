@@ -8,37 +8,55 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap');
 
+        :root {
+            --dark-bg-1: #0d1b2a;
+            --dark-bg-2: #1b263b;
+            --dark-bg-3: #294068;
+            --dark-bg-4: #0f3460;
+            --particle-color: rgba(255, 255, 255, 0.07);
+            --primary-blue: #3498db;
+            --primary-blue-darker: #2980b9;
+            --text-dark: #2c3e50;
+            --text-medium: #34495e;
+            --border-color: #bdc3c7;
+            --container-bg: rgba(255, 255, 255, 0.95); /* Slightly more opaque */
+            --success-bg: #eafaf1;
+            --success-text: #229954;
+            --success-border: #a9dfbf;
+            --error-bg: #fdedec;
+            --error-text: #c0392b;
+            --error-border: #f5b7b1;
+            --loading-bg: #eef2f7;
+            --loading-text: #34495e;
+            --loading-border: #d6dbdf;
+        }
+
         body {
             font-family: 'Rubik', sans-serif;
             margin: 0;
-            color: #333;
+            color: var(--text-dark);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            direction: rtl; /* Right-to-left for Hebrew */
-            /* overflow: hidden; -- REMOVED to allow scrolling */
+            direction: rtl;
+            padding-bottom: 60px; /* Space for bottom-left button */
         }
 
         .background-effects {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1; /* Behind main content container */
-            overflow: hidden; /* Important to clip particles */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
         }
 
         .animated-gradient-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(-45deg, #0d1b2a, #1b263b, #294068, #0f3460); /* Dark colors */
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(-45deg, var(--dark-bg-1), var(--dark-bg-2), var(--dark-bg-3), var(--dark-bg-4));
             background-size: 400% 400%;
-            animation: gradientBG 25s ease infinite;
+            animation: gradientBG 20s ease infinite;
         }
 
         @keyframes gradientBG {
@@ -48,144 +66,134 @@
         }
 
         .moving-particles-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            pointer-events: none; /* Particles should not interfere with mouse events */
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            list-style: none; margin: 0; padding: 0;
+            pointer-events: none;
         }
 
         .moving-particles-layer li {
-            position: absolute;
-            display: block;
-            background-color: rgba(255, 255, 255, 0.07); /* Dim, transparent white for particles */
-            animation: particle-animation 20s linear infinite;
-            bottom: -60px; /* Start off-screen from bottom */
+            position: absolute; display: block;
+            background-color: var(--particle-color);
+            animation: particle-animation linear infinite;
+            bottom: -80px;
             border-radius: 50%;
         }
 
         @keyframes particle-animation {
-            0% {
-                transform: translateY(0) scale(0.8);
-                opacity: 0;
-            }
-            10%, 90% { /* Appear and fade during middle of animation */
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) scale(1.2); /* Move up full viewport height */
-                opacity: 0;
-            }
+            0% { transform: translateY(0px) scale(0.5); opacity: 0; }
+            20%, 80% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1); opacity: 0; }
         }
 
-        /* Define different particles */
-        .moving-particles-layer li:nth-child(1) { left: 10%; width: 20px; height: 20px; animation-delay: 0s; animation-duration: 15s;}
-        .moving-particles-layer li:nth-child(2) { left: 20%; width: 30px; height: 30px; animation-delay: 2s; animation-duration: 17s;}
-        .moving-particles-layer li:nth-child(3) { left: 30%; width: 15px; height: 15px; animation-delay: 4s; animation-duration: 20s;}
-        .moving-particles-layer li:nth-child(4) { left: 50%; width: 25px; height: 25px; animation-delay: 0s; animation-duration: 18s;}
-        .moving-particles-layer li:nth-child(5) { left: 65%; width: 10px; height: 10px; animation-delay: 1s; animation-duration: 22s;}
-        .moving-particles-layer li:nth-child(6) { left: 80%; width: 35px; height: 35px; animation-delay: 3s; animation-duration: 16s;}
-        .moving-particles-layer li:nth-child(7) { left: 90%; width: 20px; height: 20px; animation-delay: 5s; animation-duration: 19s;}
-
+        .moving-particles-layer li:nth-child(1) { left: 5%; width: 30px; height: 30px; animation-duration: 5s; animation-delay: 0s;}
+        .moving-particles-layer li:nth-child(2) { left: 15%; width: 15px; height: 15px; animation-duration: 4s; animation-delay: 0.5s;}
+        .moving-particles-layer li:nth-child(3) { left: 30%; width: 40px; height: 40px; animation-duration: 6s; animation-delay: 1s;}
+        .moving-particles-layer li:nth-child(4) { left: 45%; width: 20px; height: 20px; animation-duration: 3.5s; animation-delay: 0.2s;}
+        .moving-particles-layer li:nth-child(5) { left: 60%; width: 25px; height: 25px; animation-duration: 5.5s; animation-delay: 1.5s;}
+        .moving-particles-layer li:nth-child(6) { left: 75%; width: 10px; height: 10px; animation-duration: 4.5s; animation-delay: 0.8s;}
+        .moving-particles-layer li:nth-child(7) { left: 85%; width: 35px; height: 35px; animation-duration: 7s; animation-delay: 1.2s;}
 
         .container {
-            background-color: rgba(255, 255, 255, 0.92); /* Slightly more opaque for better readability */
+            background-color: var(--container-bg);
             padding: 30px 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-radius: 12px; /* Smoother radius */
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
             width: 100%;
-            max-width: 500px;
+            max-width: 520px; /* Slightly wider */
             text-align: center;
-            z-index: 1; /* Above background effects */
-            margin: 20px; /* Add some margin for smaller screens if content overflows */
+            z-index: 1;
+            margin: 20px;
         }
 
         h1 {
-            color: #2c3e50; /* Darker heading color */
-            margin-bottom: 25px;
-            font-size: 1.8em;
+            color: var(--text-dark);
+            margin-bottom: 30px; /* More space */
+            font-size: 2em; /* Larger title */
         }
 
-        .form-group {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #34495e; /* Slightly darker label color */
-        }
-
+        .form-group { margin-bottom: 20px; text-align: right; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-medium); }
         .form-group input[type="text"],
         .form-group input[type="password"],
         .form-group textarea {
-            width: 100%; /* Changed from calc for better box-sizing behavior */
-            padding: 12px; /* Slightly increased padding */
-            border: 1px solid #bdc3c7; /* Softer border color */
-            border-radius: 5px;
-            font-size: 1em;
-            font-family: 'Rubik', sans-serif;
-            box-sizing: border-box;
-            background-color: #fff; /* Ensure input backgrounds are white */
+            width: 100%; padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px; /* Consistent radius */
+            font-size: 1em; font-family: 'Rubik', sans-serif;
+            box-sizing: border-box; background-color: #fff;
         }
+        .form-group textarea { resize: vertical; min-height: 80px; }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px; /* Minimum height for textareas */
+        #savedCredentialsInfo { margin-bottom: 20px; text-align: right; }
+        #savedCredentialsInfo p { margin: 0 0 10px 0; font-size: 0.95em; }
+        #savedCredentialsInfo strong { font-weight: 600; color: var(--text-dark); }
+        
+        .styled-button { /* Common style for buttons */
+            background-color: var(--primary-blue); color: white;
+            padding: 10px 18px; border: none; border-radius: 6px;
+            font-size: 1em; font-family: 'Rubik', sans-serif;
+            cursor: pointer; transition: background-color 0.3s ease, transform 0.1s ease;
         }
+        .styled-button:hover { background-color: var(--primary-blue-darker); }
+        .styled-button:active { transform: scale(0.98); }
 
-        button[type="submit"] {
-            background-color: #3498db; /* Primary blue */
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.1em;
-            font-family: 'Rubik', sans-serif;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            width: 100%;
-        }
+        button[type="submit"] { width: 100%; padding: 12px 20px; font-size: 1.1em; }
+        #changeCredentialsBtn { font-size: 0.9em; background-color: #7f8c8d; } /* Neutral color for change button */
+        #changeCredentialsBtn:hover { background-color: #6c7a7d; }
 
-        button[type="submit"]:hover {
-            background-color: #2980b9; /* Darker blue on hover */
-        }
-        button[type="submit"]:active {
-            transform: scale(0.98); /* Click effect */
-        }
 
         #responseArea {
-            margin-top: 20px;
-            padding: 12px; /* Increased padding */
-            border-radius: 5px;
-            font-size: 0.95em;
-            min-height: 20px;
-            word-wrap: break-word;
-            text-align: right; /* Align text to right for Hebrew messages */
+            margin-top: 20px; padding: 12px; border-radius: 6px;
+            font-size: 0.95em; min-height: 20px; word-wrap: break-word;
+            text-align: right;
+        }
+        #responseArea.success { background-color: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+        #responseArea.error { background-color: var(--error-bg); color: var(--error-text); border: 1px solid var(--error-border); }
+        #responseArea.loading { background-color: var(--loading-bg); color: var(--loading-text); border: 1px solid var(--loading-border); }
+
+        /* Floating Button for Last Response */
+        .floating-btn {
+            position: fixed;
+            bottom: 15px; left: 15px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
-        #responseArea.success {
-            background-color: #eafaf1; /* Lighter green */
-            color: #229954; /* Darker success green */
-            border: 1px solid #a9dfbf;
+        /* Modal Styles */
+        .modal {
+            display: none; position: fixed;
+            z-index: 1001; left: 0; top: 0;
+            width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.6);
+            padding-top: 60px;
         }
+        .modal-content {
+            background-color: #fefefe; margin: 5% auto;
+            padding: 25px; border: 1px solid #888;
+            width: 80%; max-width: 700px;
+            border-radius: 8px; position: relative;
+            text-align: right; /* For Hebrew content */
+        }
+        .modal-close-btn {
+            color: #aaa; float: left; /* Position to top-left for RTL context */
+            font-size: 28px; font-weight: bold;
+            line-height: 1;
+        }
+        .modal-close-btn:hover, .modal-close-btn:focus {
+            color: black; text-decoration: none; cursor: pointer;
+        }
+        .modal h2 { margin-top: 0; color: var(--text-dark); }
+        
+        .response-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .response-table th, .response-table td {
+            border: 1px solid #ddd; padding: 10px;
+            text-align: right; vertical-align: top;
+            word-break: break-all;
+        }
+        .response-table th { background-color: #f2f2f2; color: var(--text-medium); font-weight: 600; }
+        .response-table td:first-child { font-weight: 500; width: 30%; } /* Key column */
 
-        #responseArea.error {
-            background-color: #fdedec; /* Lighter red */
-            color: #c0392b; /* Darker error red */
-            border: 1px solid #f5b7b1;
-        }
-        #responseArea.loading { /* Specific style for loading message */
-            background-color: #eef2f7; /* Light blue-gray */
-            color: #34495e; /* Dark gray text */
-            border: 1px solid #d6dbdf;
-        }
     </style>
 </head>
 <body>
@@ -195,17 +203,27 @@
             <li></li><li></li><li></li><li></li><li></li><li></li><li></li>
         </ul>
     </div>
+
     <div class="container">
         <h1>שליחת קמפיין TTS ל-Call2All</h1>
+        
+        <div id="savedCredentialsInfo" style="display:none;">
+            <p>פרטי התחברות שמורים עבור מערכת: <strong id="savedSystemNumberDisplay"></strong></p>
+            <button type="button" id="changeCredentialsBtn" class="styled-button">שנה פרטי התחברות</button>
+        </div>
+
         <form id="campaignForm">
-            <div class="form-group">
-                <label for="systemNumber">מספר מערכת:</label>
-                <input type="text" id="systemNumber" name="systemNumber" required>
+            <div id="credentialsFormInputs">
+                <div class="form-group">
+                    <label for="systemNumber">מספר מערכת:</label>
+                    <input type="text" id="systemNumber" name="systemNumber" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">סיסמה:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="password">סיסמה:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
+
             <div class="form-group">
                 <label for="phones">מספרי טלפון (מופרדים בפסיק):</label>
                 <textarea id="phones" name="phones" rows="3" required placeholder="לדוגמה: 0501234567,0529876543"></textarea>
@@ -214,9 +232,19 @@
                 <label for="message">תוכן ההודעה:</label>
                 <textarea id="message" name="message" rows="4" required></textarea>
             </div>
-            <button type="submit">שלח קמפיין</button>
+            <button type="submit" class="styled-button">שלח קמפיין</button>
         </form>
         <div id="responseArea"></div>
+    </div>
+
+    <button id="showLastResponseBtn" class="styled-button floating-btn" style="display:none;">הצג תגובה אחרונה</button>
+
+    <div id="responseModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-btn">&times;</span>
+            <h2>תגובת שרת אחרונה</h2>
+            <div id="modalResponseTableContainer"></div>
+        </div>
     </div>
 
     <script>
@@ -228,6 +256,16 @@
             const messageInput = document.getElementById('message');
             const responseArea = document.getElementById('responseArea');
 
+            const credentialsFormInputs = document.getElementById('credentialsFormInputs');
+            const savedCredentialsInfo = document.getElementById('savedCredentialsInfo');
+            const savedSystemNumberDisplay = document.getElementById('savedSystemNumberDisplay');
+            const changeCredentialsBtn = document.getElementById('changeCredentialsBtn');
+            
+            const showLastResponseBtn = document.getElementById('showLastResponseBtn');
+            const responseModal = document.getElementById('responseModal');
+            const modalCloseBtn = responseModal.querySelector('.modal-close-btn');
+            const modalResponseTableContainer = document.getElementById('modalResponseTableContainer');
+
             const API_URL = 'https://www.call2all.co.il/ym/api/RunCampaign';
 
             function setCookie(name, value, days) {
@@ -237,7 +275,8 @@
                     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
                     expires = "; expires=" + date.toUTCString();
                 }
-                document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax; Secure"; // Added Secure for HTTPS
+                // Ensure cookies are set with Secure if site is HTTPS, SameSite=Lax is good default
+                document.cookie = name + "=" + (encodeURIComponent(value) || "") + expires + "; path=/; SameSite=Lax" + (window.location.protocol === "https:" ? "; Secure" : "");
             }
 
             function getCookie(name) {
@@ -246,30 +285,88 @@
                 for (let i = 0; i < ca.length; i++) {
                     let c = ca[i];
                     while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-                    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+                    if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
                 }
                 return null;
             }
+            
+            function escapeHtml(unsafe) {
+                if (unsafe === null || typeof unsafe === 'undefined') return '';
+                return unsafe.toString()
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
 
-            function loadCredentials() {
-                const savedSystemNumber = getCookie('call2all_system_number');
-                const savedPassword = getCookie('call2all_password');
-
-                if (savedSystemNumber) {
-                    systemNumberInput.value = savedSystemNumber;
+            function jsonToTable(jsonObj) {
+                if (!jsonObj || typeof jsonObj !== 'object') return '<p>אין נתונים להצגה או שהפורמט אינו תקין.</p>';
+                let tableHtml = '<table class="response-table"><thead><tr><th>מפתח</th><th>ערך</th></tr></thead><tbody>';
+                for (const key in jsonObj) {
+                    if (jsonObj.hasOwnProperty(key)) {
+                        let value = jsonObj[key];
+                        if (typeof value === 'object' && value !== null) {
+                            value = JSON.stringify(value, null, 2); // Pretty print nested JSON
+                            value = `<pre>${escapeHtml(value)}</pre>`; // Display in pre for formatting
+                        } else {
+                            value = escapeHtml(value);
+                        }
+                        tableHtml += `<tr><td>${escapeHtml(key)}</td><td>${value}</td></tr>`;
+                    }
                 }
-                if (savedPassword) {
-                    passwordInput.value = savedPassword;
+                tableHtml += '</tbody></table>';
+                return tableHtml;
+            }
+
+            function updateCredentialsUI() {
+                const systemNumberFromCookie = getCookie('call2all_system_number');
+                const passwordFromCookie = getCookie('call2all_password');
+
+                if (systemNumberFromCookie && passwordFromCookie) {
+                    credentialsFormInputs.style.display = 'none';
+                    savedCredentialsInfo.style.display = 'block';
+                    savedSystemNumberDisplay.textContent = systemNumberFromCookie;
+                    
+                    // Ensure inputs have values from cookies for submission logic
+                    systemNumberInput.value = systemNumberFromCookie;
+                    passwordInput.value = passwordFromCookie;
+                } else {
+                    credentialsFormInputs.style.display = 'block';
+                    savedCredentialsInfo.style.display = 'none';
                 }
             }
 
-            loadCredentials();
+            function loadInitialData() {
+                const savedSystemNumber = getCookie('call2all_system_number');
+                const savedPassword = getCookie('call2all_password');
+
+                if (savedSystemNumber) systemNumberInput.value = savedSystemNumber;
+                if (savedPassword) passwordInput.value = savedPassword;
+                
+                updateCredentialsUI();
+
+                if (getCookie('call2all_last_response')) {
+                    showLastResponseBtn.style.display = 'block';
+                } else {
+                    showLastResponseBtn.style.display = 'none';
+                }
+            }
+
+            loadInitialData();
+
+            changeCredentialsBtn.addEventListener('click', () => {
+                credentialsFormInputs.style.display = 'block';
+                savedCredentialsInfo.style.display = 'none';
+                passwordInput.value = ''; // Clear password for security when revealing
+                systemNumberInput.focus();
+            });
 
             campaignForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
 
                 const systemNumber = systemNumberInput.value.trim();
-                const password = passwordInput.value; // Passwords often allow leading/trailing spaces
+                const password = passwordInput.value; // Not trimming password
                 const phonesText = phonesInput.value.trim();
                 const messageText = messageInput.value.trim();
 
@@ -278,24 +375,25 @@
                     return;
                 }
 
-                setCookie('call2all_system_number', systemNumber, 7);
-                setCookie('call2all_password', password, 7);
+                // Confirmation Dialog
+                if (!confirm("האם אתה בטוח שברצונך לשלוח את הקמפיין?")) {
+                    showResponse('שליחת הקמפיין בוטלה על ידך.', 'info');
+                    return;
+                }
+
+                setCookie('call2all_system_number', systemNumber, 30); // Extended cookie life to 30 days
+                setCookie('call2all_password', password, 30);
+                updateCredentialsUI(); // Reflect that credentials are now saved (if they weren't or changed)
 
                 const token = `${systemNumber}:${password}`;
-                
-                const phoneNumbersArray = phonesText.split(',')
-                    .map(phone => phone.trim())
-                    .filter(phone => phone !== '');
+                const phoneNumbersArray = phonesText.split(',').map(phone => phone.trim()).filter(phone => phone !== '');
 
                 if (phoneNumbersArray.length === 0) {
                     showResponse('יש להזין לפחות מספר טלפון אחד תקין.', 'error');
                     return;
                 }
 
-                const phonesPayload = phoneNumbersArray.map(phone => {
-                    return { "phone": phone, "message": messageText };
-                });
-
+                const phonesPayload = phoneNumbersArray.map(phone => ({ "phone": phone, "message": messageText }));
                 const params = new URLSearchParams();
                 params.append('token', token);
                 params.append('campaignType', 'Tts');
@@ -307,37 +405,65 @@
                 try {
                     const response = await fetch(API_URL, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: params
                     });
-
                     const responseData = await response.json();
 
+                    setCookie('call2all_last_response', JSON.stringify(responseData), 7); // Save response
+                    showLastResponseBtn.style.display = 'block'; // Ensure button is visible
+
                     if (responseData.responseStatus === "OK") {
-                        showResponse(`הקמפיין נשלח בהצלחה!`, 'success'); // Campaign ID removed
-                        campaignForm.reset(); // Optionally reset form on success
-                        // Consider not resetting credentials if user wants to send another similar campaign
-                        // systemNumberInput.value = getCookie('call2all_system_number') || ''; // Keep if needed
-                        // passwordInput.value = getCookie('call2all_password') || ''; // Keep if needed
+                        showResponse('הקמפיין נשלח בהצלחה!', 'success');
+                        // campaignForm.reset(); // Optional: reset only specific fields
+                        phonesInput.value = ''; // Clear phones
+                        messageInput.value = ''; // Clear message
                     } else {
                         showResponse(`שגיאה בשליחת הקמפיין: ${responseData.message || 'שגיאה לא ידועה מהשרת.'}`, 'error');
                     }
-
                 } catch (error) {
                     console.error('Error sending campaign:', error);
+                    const errorResponse = { responseStatus: "CLIENT_ERROR", message: error.message };
+                    setCookie('call2all_last_response', JSON.stringify(errorResponse), 7);
+                    showLastResponseBtn.style.display = 'block';
                     showResponse(`שגיאת רשת או בעיה בשליחה: ${error.message}`, 'error');
                 }
             });
 
-            function showResponse(message, type = 'info') { // type can be 'success', 'error', 'loading', 'info'
+            function showResponse(message, type = 'info') {
                 responseArea.textContent = message;
-                responseArea.className = 'response-area'; // Reset classes
+                responseArea.className = ''; // Reset all classes
+                responseArea.classList.add('response-area'); // Base class
                 if (type) {
                     responseArea.classList.add(type);
                 }
             }
+
+            // Modal Logic
+            showLastResponseBtn.addEventListener('click', () => {
+                const lastResponseStr = getCookie('call2all_last_response');
+                if (lastResponseStr) {
+                    try {
+                        const lastResponseJson = JSON.parse(lastResponseStr);
+                        modalResponseTableContainer.innerHTML = jsonToTable(lastResponseJson);
+                    } catch (e) {
+                        modalResponseTableContainer.innerHTML = `<p>שגיאה בניתוח תגובת השרת השמורה: ${escapeHtml(e.message)}</p><pre>${escapeHtml(lastResponseStr)}</pre>`;
+                    }
+                } else {
+                    modalResponseTableContainer.innerHTML = '<p>לא נמצאה תגובת שרת שמורה.</p>';
+                }
+                responseModal.style.display = 'block';
+            });
+
+            modalCloseBtn.addEventListener('click', () => {
+                responseModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', (event) => { // Close modal if clicked outside content
+                if (event.target === responseModal) {
+                    responseModal.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>
