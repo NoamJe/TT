@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שליחת קמפיין TTS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            margin: 0;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Hide scrollbars from background animation if it overflows */
+            direction: rtl; /* Right-to-left for Hebrew */
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 20s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right; /* Align labels to the right */
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group textarea {
+            width: calc(100% - 20px); /* Adjust width to account for padding */
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            font-family: 'Rubik', sans-serif;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        button[type="submit"] {
+            background-color: #23a6d5;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-family: 'Rubik', sans-serif;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #1f8cb3;
+        }
+
+        #responseArea {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.95em;
+            min-height: 20px; /* Ensure it has some height even when empty */
+            word-wrap: break-word; /* Ensure long messages wrap */
+        }
+
+        #responseArea.success {
+            background-color: #e6ffed;
+            color: #28a745;
+            border: 1px solid #c3e6cb;
+        }
+
+        #responseArea.error {
+            background-color: #ffe6e6;
+            color: #dc3545;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="container">
+        <h1>שליחת קמפיין TTS ל-Call2All</h1>
+        <form id="campaignForm">
+            <div class="form-group">
+                <label for="systemNumber">מספר מערכת:</label>
+                <input type="text" id="systemNumber" name="systemNumber" required>
+            </div>
+            <div class="form-group">
+                <label for="password">סיסמה:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="phones">מספרי טלפון (מופרדים בפסיק):</label>
+                <textarea id="phones" name="phones" rows="3" required placeholder="לדוגמה: 0501234567,0529876543"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="message">תוכן ההודעה:</label>
+                <textarea id="message" name="message" rows="4" required></textarea>
+            </div>
+            <button type="submit">שלח קמפיין</button>
+        </form>
+        <div id="responseArea"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const campaignForm = document.getElementById('campaignForm');
+            const systemNumberInput = document.getElementById('systemNumber');
+            const passwordInput = document.getElementById('password');
+            const phonesInput = document.getElementById('phones');
+            const messageInput = document.getElementById('message');
+            const responseArea = document.getElementById('responseArea');
+
+            const API_URL = 'https://www.call2all.co.il/ym/api/RunCampaign';
+
+            // Function to set a cookie
+            function setCookie(name, value, days) {
+                let expires = "";
+                if (days) {
+                    const date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
+            }
+
+            // Function to get a cookie
+            function getCookie(name) {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+                }
+                return null;
+            }
+
+            // Load credentials from cookies
+            function loadCredentials() {
+                const savedSystemNumber = getCookie('call2all_system_number');
+                const savedPassword = getCookie('call2all_password');
+
+                if (savedSystemNumber) {
+                    systemNumberInput.value = savedSystemNumber;
+                }
+                if (savedPassword) {
+                    passwordInput.value = savedPassword;
+                }
+            }
+
+            loadCredentials(); // Load on page start
+
+            campaignForm.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                const systemNumber = systemNumberInput.value.trim();
+                const password = passwordInput.value.trim(); // Passwords should ideally not be trimmed if spaces are significant
+                const phonesText = phonesInput.value.trim();
+                const messageText = messageInput.value.trim();
+
+                // Basic validation
+                if (!systemNumber || !password || !phonesText || !messageText) {
+                    showResponse('נא למלא את כל השדות.', true);
+                    return;
+                }
+
+                // Save credentials to cookies for 7 days
+                setCookie('call2all_system_number', systemNumber, 7);
+                setCookie('call2all_password', password, 7);
+
+                const token = `${systemNumber}:${password}`;
+                
+                const phoneNumbersArray = phonesText.split(',')
+                    .map(phone => phone.trim())
+                    .filter(phone => phone !== ''); // Remove empty strings
+
+                if (phoneNumbersArray.length === 0) {
+                    showResponse('יש להזין לפחות מספר טלפון אחד תקין.', true);
+                    return;
+                }
+
+                const phonesPayload = phoneNumbersArray.map(phone => {
+                    return { "phone": phone, "message": messageText };
+                });
+
+                // Prepare data for API call (using URLSearchParams for POST x-www-form-urlencoded)
+                const params = new URLSearchParams();
+                params.append('token', token);
+                params.append('campaignType', 'Tts'); // As per documentation for TTS campaign
+                params.append('ttsMode', '1'); // Hardcoded as requested
+                params.append('phones', JSON.stringify(phonesPayload));
+
+                showResponse('שולח קמפיין...', false, true); // Indicate loading
+
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: params
+                    });
+
+                    const responseData = await response.json();
+
+                    if (responseData.responseStatus === "OK") {
+                        showResponse(`הקמפיין נשלח בהצלחה! מזהה קמפיין: ${responseData.campaignId}`, false);
+                    } else {
+                        showResponse(`שגיאה בשליחת הקמפיין: ${responseData.message || 'שגיאה לא ידועה מהשרת.'}`, true);
+                    }
+
+                } catch (error) {
+                    console.error('Error sending campaign:', error);
+                    showResponse(`שגיאת רשת או בעיה בשליחה: ${error.message}`, true);
+                }
+            });
+
+            function showResponse(message, isError = false, isLoading = false) {
+                responseArea.textContent = message;
+                responseArea.className = ''; // Reset classes
+                if (isLoading) {
+                    // Neutral styling for loading message
+                    // You can add a specific class like 'loading' if you want to style it differently
+                    responseArea.style.color = '#333'; // Default text color
+                    responseArea.style.backgroundColor = '#f0f0f0'; // Light gray background
+                    responseArea.style.border = '1px solid #ccc';
+                } else if (isError) {
+                    responseArea.classList.add('error');
+                } else {
+                    responseArea.classList.add('success');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
