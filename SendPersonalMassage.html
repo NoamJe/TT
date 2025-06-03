@@ -151,6 +151,8 @@
         #responseArea.success { background-color: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
         #responseArea.error { background-color: var(--error-bg); color: var(--error-text); border: 1px solid var(--error-border); }
         #responseArea.loading { background-color: var(--loading-bg); color: var(--loading-text); border: 1px solid var(--loading-border); }
+        #responseArea.info { background-color: var(--loading-bg); color: var(--loading-text); border: 1px solid var(--loading-border); }
+
 
         /* Floating Button for Last Response */
         .floating-btn {
@@ -193,6 +195,8 @@
         }
         .response-table th { background-color: #f2f2f2; color: var(--text-medium); font-weight: 600; }
         .response-table td:first-child { font-weight: 500; width: 30%; } /* Key column */
+        .response-table pre { white-space: pre-wrap; word-wrap: break-word; margin:0; font-family: 'Rubik', sans-serif; font-size: 0.9em;}
+
 
     </style>
 </head>
@@ -234,7 +238,7 @@
             </div>
             <button type="submit" class="styled-button">שלח קמפיין</button>
         </form>
-        <div id="responseArea"></div>
+        <div id="responseArea" class="response-area"></div>
     </div>
 
     <button id="showLastResponseBtn" class="styled-button floating-btn" style="display:none;">הצג תגובה אחרונה</button>
@@ -253,7 +257,7 @@
             const systemNumberInput = document.getElementById('systemNumber');
             const passwordInput = document.getElementById('password');
             const phonesInput = document.getElementById('phones');
-            const messageInput = document.getElementById('message');
+            const messageInput = document.getElementById('message'); // This is the textarea for message content
             const responseArea = document.getElementById('responseArea');
 
             const credentialsFormInputs = document.getElementById('credentialsFormInputs');
@@ -275,7 +279,6 @@
                     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
                     expires = "; expires=" + date.toUTCString();
                 }
-                // Ensure cookies are set with Secure if site is HTTPS, SameSite=Lax is good default
                 document.cookie = name + "=" + (encodeURIComponent(value) || "") + expires + "; path=/; SameSite=Lax" + (window.location.protocol === "https:" ? "; Secure" : "");
             }
 
@@ -307,8 +310,8 @@
                     if (jsonObj.hasOwnProperty(key)) {
                         let value = jsonObj[key];
                         if (typeof value === 'object' && value !== null) {
-                            value = JSON.stringify(value, null, 2); // Pretty print nested JSON
-                            value = `<pre>${escapeHtml(value)}</pre>`; // Display in pre for formatting
+                            value = JSON.stringify(value, null, 2); 
+                            value = `<pre>${escapeHtml(value)}</pre>`; 
                         } else {
                             value = escapeHtml(value);
                         }
@@ -327,8 +330,6 @@
                     credentialsFormInputs.style.display = 'none';
                     savedCredentialsInfo.style.display = 'block';
                     savedSystemNumberDisplay.textContent = systemNumberFromCookie;
-                    
-                    // Ensure inputs have values from cookies for submission logic
                     systemNumberInput.value = systemNumberFromCookie;
                     passwordInput.value = passwordFromCookie;
                 } else {
@@ -358,7 +359,7 @@
             changeCredentialsBtn.addEventListener('click', () => {
                 credentialsFormInputs.style.display = 'block';
                 savedCredentialsInfo.style.display = 'none';
-                passwordInput.value = ''; // Clear password for security when revealing
+                passwordInput.value = ''; 
                 systemNumberInput.focus();
             });
 
@@ -366,24 +367,23 @@
                 event.preventDefault();
 
                 const systemNumber = systemNumberInput.value.trim();
-                const password = passwordInput.value; // Not trimming password
+                const password = passwordInput.value; 
                 const phonesText = phonesInput.value.trim();
-                const messageText = messageInput.value.trim();
+                const messageContent = messageInput.value.trim(); // Content from the textarea
 
-                if (!systemNumber || !password || !phonesText || !messageText) {
+                if (!systemNumber || !password || !phonesText || !messageContent) {
                     showResponse('נא למלא את כל השדות.', 'error');
                     return;
                 }
 
-                // Confirmation Dialog
                 if (!confirm("האם אתה בטוח שברצונך לשלוח את הקמפיין?")) {
                     showResponse('שליחת הקמפיין בוטלה על ידך.', 'info');
                     return;
                 }
 
-                setCookie('call2all_system_number', systemNumber, 30); // Extended cookie life to 30 days
+                setCookie('call2all_system_number', systemNumber, 30);
                 setCookie('call2all_password', password, 30);
-                updateCredentialsUI(); // Reflect that credentials are now saved (if they weren't or changed)
+                updateCredentialsUI(); 
 
                 const token = `${systemNumber}:${password}`;
                 const phoneNumbersArray = phonesText.split(',').map(phone => phone.trim()).filter(phone => phone !== '');
@@ -393,7 +393,13 @@
                     return;
                 }
 
-                const phonesPayload = phoneNumbersArray.map(phone => ({ "phone": phone, "message": messageText }));
+                // *** השינוי המבוקש כאן ***
+                // המפתח עבור תוכן ההודעה שונה ל-"text"
+                const phonesPayload = phoneNumbersArray.map(phone => ({ 
+                    "phone": phone, 
+                    "text": messageContent // <--- השתנה מ-"message" ל-"text"
+                }));
+                
                 const params = new URLSearchParams();
                 params.append('token', token);
                 params.append('campaignType', 'Tts');
@@ -410,36 +416,34 @@
                     });
                     const responseData = await response.json();
 
-                    setCookie('call2all_last_response', JSON.stringify(responseData), 7); // Save response
-                    showLastResponseBtn.style.display = 'block'; // Ensure button is visible
+                    setCookie('call2all_last_response', JSON.stringify(responseData), 7);
+                    showLastResponseBtn.style.display = 'block'; 
 
                     if (responseData.responseStatus === "OK") {
                         showResponse('הקמפיין נשלח בהצלחה!', 'success');
-                        // campaignForm.reset(); // Optional: reset only specific fields
-                        phonesInput.value = ''; // Clear phones
-                        messageInput.value = ''; // Clear message
+                        phonesInput.value = ''; 
+                        messageInput.value = ''; 
                     } else {
                         showResponse(`שגיאה בשליחת הקמפיין: ${responseData.message || 'שגיאה לא ידועה מהשרת.'}`, 'error');
                     }
                 } catch (error) {
                     console.error('Error sending campaign:', error);
-                    const errorResponse = { responseStatus: "CLIENT_ERROR", message: error.message };
+                    const errorResponse = { responseStatus: "CLIENT_ERROR", message: error.message, details: error.toString() };
                     setCookie('call2all_last_response', JSON.stringify(errorResponse), 7);
                     showLastResponseBtn.style.display = 'block';
                     showResponse(`שגיאת רשת או בעיה בשליחה: ${error.message}`, 'error');
                 }
             });
 
-            function showResponse(message, type = 'info') {
+            function showResponse(message, type = 'info') { 
                 responseArea.textContent = message;
-                responseArea.className = ''; // Reset all classes
-                responseArea.classList.add('response-area'); // Base class
+                responseArea.className = ''; 
+                responseArea.classList.add('response-area'); 
                 if (type) {
                     responseArea.classList.add(type);
                 }
             }
 
-            // Modal Logic
             showLastResponseBtn.addEventListener('click', () => {
                 const lastResponseStr = getCookie('call2all_last_response');
                 if (lastResponseStr) {
@@ -459,7 +463,7 @@
                 responseModal.style.display = 'none';
             });
 
-            window.addEventListener('click', (event) => { // Close modal if clicked outside content
+            window.addEventListener('click', (event) => { 
                 if (event.target === responseModal) {
                     responseModal.style.display = 'none';
                 }
