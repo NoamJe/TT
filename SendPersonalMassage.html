@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>שליחת קמפיין TTS</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap');
 
@@ -15,20 +16,29 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden; /* Hide scrollbars from background animation if it overflows */
             direction: rtl; /* Right-to-left for Hebrew */
+            /* overflow: hidden; -- REMOVED to allow scrolling */
         }
 
-        .background-animation {
+        .background-effects {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            z-index: -1; /* Behind main content container */
+            overflow: hidden; /* Important to clip particles */
+        }
+
+        .animated-gradient-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #0d1b2a, #1b263b, #294068, #0f3460); /* Dark colors */
             background-size: 400% 400%;
-            animation: gradientBG 20s ease infinite;
+            animation: gradientBG 25s ease infinite;
         }
 
         @keyframes gradientBG {
@@ -37,53 +47,101 @@
             100% { background-position: 0% 50%; }
         }
 
+        .moving-particles-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            pointer-events: none; /* Particles should not interfere with mouse events */
+        }
+
+        .moving-particles-layer li {
+            position: absolute;
+            display: block;
+            background-color: rgba(255, 255, 255, 0.07); /* Dim, transparent white for particles */
+            animation: particle-animation 20s linear infinite;
+            bottom: -60px; /* Start off-screen from bottom */
+            border-radius: 50%;
+        }
+
+        @keyframes particle-animation {
+            0% {
+                transform: translateY(0) scale(0.8);
+                opacity: 0;
+            }
+            10%, 90% { /* Appear and fade during middle of animation */
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1.2); /* Move up full viewport height */
+                opacity: 0;
+            }
+        }
+
+        /* Define different particles */
+        .moving-particles-layer li:nth-child(1) { left: 10%; width: 20px; height: 20px; animation-delay: 0s; animation-duration: 15s;}
+        .moving-particles-layer li:nth-child(2) { left: 20%; width: 30px; height: 30px; animation-delay: 2s; animation-duration: 17s;}
+        .moving-particles-layer li:nth-child(3) { left: 30%; width: 15px; height: 15px; animation-delay: 4s; animation-duration: 20s;}
+        .moving-particles-layer li:nth-child(4) { left: 50%; width: 25px; height: 25px; animation-delay: 0s; animation-duration: 18s;}
+        .moving-particles-layer li:nth-child(5) { left: 65%; width: 10px; height: 10px; animation-delay: 1s; animation-duration: 22s;}
+        .moving-particles-layer li:nth-child(6) { left: 80%; width: 35px; height: 35px; animation-delay: 3s; animation-duration: 16s;}
+        .moving-particles-layer li:nth-child(7) { left: 90%; width: 20px; height: 20px; animation-delay: 5s; animation-duration: 19s;}
+
+
         .container {
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.92); /* Slightly more opaque for better readability */
             padding: 30px 40px;
             border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             width: 100%;
             max-width: 500px;
             text-align: center;
-            z-index: 1;
+            z-index: 1; /* Above background effects */
+            margin: 20px; /* Add some margin for smaller screens if content overflows */
         }
 
         h1 {
-            color: #333;
+            color: #2c3e50; /* Darker heading color */
             margin-bottom: 25px;
             font-size: 1.8em;
         }
 
         .form-group {
             margin-bottom: 20px;
-            text-align: right; /* Align labels to the right */
+            text-align: right;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: #555;
+            color: #34495e; /* Slightly darker label color */
         }
 
         .form-group input[type="text"],
         .form-group input[type="password"],
         .form-group textarea {
-            width: calc(100% - 20px); /* Adjust width to account for padding */
-            padding: 10px;
-            border: 1px solid #ddd;
+            width: 100%; /* Changed from calc for better box-sizing behavior */
+            padding: 12px; /* Slightly increased padding */
+            border: 1px solid #bdc3c7; /* Softer border color */
             border-radius: 5px;
             font-size: 1em;
             font-family: 'Rubik', sans-serif;
-            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            box-sizing: border-box;
+            background-color: #fff; /* Ensure input backgrounds are white */
         }
 
         .form-group textarea {
             resize: vertical;
+            min-height: 80px; /* Minimum height for textareas */
         }
 
         button[type="submit"] {
-            background-color: #23a6d5;
+            background-color: #3498db; /* Primary blue */
             color: white;
             padding: 12px 20px;
             border: none;
@@ -91,38 +149,52 @@
             font-size: 1.1em;
             font-family: 'Rubik', sans-serif;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.1s ease;
             width: 100%;
         }
 
         button[type="submit"]:hover {
-            background-color: #1f8cb3;
+            background-color: #2980b9; /* Darker blue on hover */
+        }
+        button[type="submit"]:active {
+            transform: scale(0.98); /* Click effect */
         }
 
         #responseArea {
             margin-top: 20px;
-            padding: 10px;
+            padding: 12px; /* Increased padding */
             border-radius: 5px;
             font-size: 0.95em;
-            min-height: 20px; /* Ensure it has some height even when empty */
-            word-wrap: break-word; /* Ensure long messages wrap */
+            min-height: 20px;
+            word-wrap: break-word;
+            text-align: right; /* Align text to right for Hebrew messages */
         }
 
         #responseArea.success {
-            background-color: #e6ffed;
-            color: #28a745;
-            border: 1px solid #c3e6cb;
+            background-color: #eafaf1; /* Lighter green */
+            color: #229954; /* Darker success green */
+            border: 1px solid #a9dfbf;
         }
 
         #responseArea.error {
-            background-color: #ffe6e6;
-            color: #dc3545;
-            border: 1px solid #f5c6cb;
+            background-color: #fdedec; /* Lighter red */
+            color: #c0392b; /* Darker error red */
+            border: 1px solid #f5b7b1;
+        }
+        #responseArea.loading { /* Specific style for loading message */
+            background-color: #eef2f7; /* Light blue-gray */
+            color: #34495e; /* Dark gray text */
+            border: 1px solid #d6dbdf;
         }
     </style>
 </head>
 <body>
-    <div class="background-animation"></div>
+    <div class="background-effects">
+        <div class="animated-gradient-layer"></div>
+        <ul class="moving-particles-layer">
+            <li></li><li></li><li></li><li></li><li></li><li></li><li></li>
+        </ul>
+    </div>
     <div class="container">
         <h1>שליחת קמפיין TTS ל-Call2All</h1>
         <form id="campaignForm">
@@ -158,7 +230,6 @@
 
             const API_URL = 'https://www.call2all.co.il/ym/api/RunCampaign';
 
-            // Function to set a cookie
             function setCookie(name, value, days) {
                 let expires = "";
                 if (days) {
@@ -166,10 +237,9 @@
                     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
                     expires = "; expires=" + date.toUTCString();
                 }
-                document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
+                document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax; Secure"; // Added Secure for HTTPS
             }
 
-            // Function to get a cookie
             function getCookie(name) {
                 const nameEQ = name + "=";
                 const ca = document.cookie.split(';');
@@ -181,7 +251,6 @@
                 return null;
             }
 
-            // Load credentials from cookies
             function loadCredentials() {
                 const savedSystemNumber = getCookie('call2all_system_number');
                 const savedPassword = getCookie('call2all_password');
@@ -194,23 +263,21 @@
                 }
             }
 
-            loadCredentials(); // Load on page start
+            loadCredentials();
 
             campaignForm.addEventListener('submit', async (event) => {
-                event.preventDefault(); // Prevent default form submission
+                event.preventDefault();
 
                 const systemNumber = systemNumberInput.value.trim();
-                const password = passwordInput.value.trim(); // Passwords should ideally not be trimmed if spaces are significant
+                const password = passwordInput.value; // Passwords often allow leading/trailing spaces
                 const phonesText = phonesInput.value.trim();
                 const messageText = messageInput.value.trim();
 
-                // Basic validation
                 if (!systemNumber || !password || !phonesText || !messageText) {
-                    showResponse('נא למלא את כל השדות.', true);
+                    showResponse('נא למלא את כל השדות.', 'error');
                     return;
                 }
 
-                // Save credentials to cookies for 7 days
                 setCookie('call2all_system_number', systemNumber, 7);
                 setCookie('call2all_password', password, 7);
 
@@ -218,10 +285,10 @@
                 
                 const phoneNumbersArray = phonesText.split(',')
                     .map(phone => phone.trim())
-                    .filter(phone => phone !== ''); // Remove empty strings
+                    .filter(phone => phone !== '');
 
                 if (phoneNumbersArray.length === 0) {
-                    showResponse('יש להזין לפחות מספר טלפון אחד תקין.', true);
+                    showResponse('יש להזין לפחות מספר טלפון אחד תקין.', 'error');
                     return;
                 }
 
@@ -229,14 +296,13 @@
                     return { "phone": phone, "message": messageText };
                 });
 
-                // Prepare data for API call (using URLSearchParams for POST x-www-form-urlencoded)
                 const params = new URLSearchParams();
                 params.append('token', token);
-                params.append('campaignType', 'Tts'); // As per documentation for TTS campaign
-                params.append('ttsMode', '1'); // Hardcoded as requested
+                params.append('campaignType', 'Tts');
+                params.append('ttsMode', '1');
                 params.append('phones', JSON.stringify(phonesPayload));
 
-                showResponse('שולח קמפיין...', false, true); // Indicate loading
+                showResponse('שולח קמפיין...', 'loading');
 
                 try {
                     const response = await fetch(API_URL, {
@@ -250,30 +316,26 @@
                     const responseData = await response.json();
 
                     if (responseData.responseStatus === "OK") {
-                        showResponse(`הקמפיין נשלח בהצלחה! מזהה קמפיין: ${responseData.campaignId}`, false);
+                        showResponse(`הקמפיין נשלח בהצלחה!`, 'success'); // Campaign ID removed
+                        campaignForm.reset(); // Optionally reset form on success
+                        // Consider not resetting credentials if user wants to send another similar campaign
+                        // systemNumberInput.value = getCookie('call2all_system_number') || ''; // Keep if needed
+                        // passwordInput.value = getCookie('call2all_password') || ''; // Keep if needed
                     } else {
-                        showResponse(`שגיאה בשליחת הקמפיין: ${responseData.message || 'שגיאה לא ידועה מהשרת.'}`, true);
+                        showResponse(`שגיאה בשליחת הקמפיין: ${responseData.message || 'שגיאה לא ידועה מהשרת.'}`, 'error');
                     }
 
                 } catch (error) {
                     console.error('Error sending campaign:', error);
-                    showResponse(`שגיאת רשת או בעיה בשליחה: ${error.message}`, true);
+                    showResponse(`שגיאת רשת או בעיה בשליחה: ${error.message}`, 'error');
                 }
             });
 
-            function showResponse(message, isError = false, isLoading = false) {
+            function showResponse(message, type = 'info') { // type can be 'success', 'error', 'loading', 'info'
                 responseArea.textContent = message;
-                responseArea.className = ''; // Reset classes
-                if (isLoading) {
-                    // Neutral styling for loading message
-                    // You can add a specific class like 'loading' if you want to style it differently
-                    responseArea.style.color = '#333'; // Default text color
-                    responseArea.style.backgroundColor = '#f0f0f0'; // Light gray background
-                    responseArea.style.border = '1px solid #ccc';
-                } else if (isError) {
-                    responseArea.classList.add('error');
-                } else {
-                    responseArea.classList.add('success');
+                responseArea.className = 'response-area'; // Reset classes
+                if (type) {
+                    responseArea.classList.add(type);
                 }
             }
         });
