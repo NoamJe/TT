@@ -9,32 +9,45 @@
         @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap');
 
         :root {
-            --dark-bg-1: #0d1b2a;
-            --dark-bg-2: #1b263b;
-            --dark-bg-3: #294068;
-            --dark-bg-4: #0f3460;
-            --particle-color: rgba(255, 255, 255, 0.07);
-            --primary-blue: #3498db;
-            --primary-blue-darker: #2980b9;
-            --text-dark: #2c3e50;
-            --text-medium: #34495e;
-            --border-color: #bdc3c7;
-            --container-bg: rgba(255, 255, 255, 0.95);
-            --success-bg: #eafaf1;
-            --success-text: #229954;
-            --success-border: #a9dfbf;
-            --error-bg: #fdedec;
-            --error-text: #c0392b;
-            --error-border: #f5b7b1;
-            --loading-bg: #eef2f7;
-            --loading-text: #34495e;
-            --loading-border: #d6dbdf;
+            /* Dark Theme Palette with Gold/Silver Accents */
+            --dark-bg-1: #0a0a0f; /* Deep dark blue/black */
+            --dark-bg-2: #10101a; /* Darker blue/grey */
+            --dark-bg-3: #1a1a2a; /* Medium dark blue/grey */
+            --dark-bg-4: #05050A; /* Very dark blue/black */
+            
+            --particle-color: rgba(212, 175, 55, 0.08); /* Subtle gold particles */
+            
+            --primary-gold: #D4AF37; /* Gold for main actions */
+            --primary-gold-darker: #b89b30; /* Darker gold for hover */
+            --accent-silver: #b0bec5; /* Light silver/grey for secondary elements */
+            --accent-silver-darker: #808e95; /* Darker silver/grey */
+
+            --text-main-light: #eceff1; /* Main light text for dark backgrounds */
+            --text-secondary-light: #cfd8dc; /* Secondary light text */
+            
+            --container-bg-dark: rgba(25, 30, 45, 0.95); /* Dark, slightly bluish container background */
+            --input-bg-dark: #263238; /* Dark blue-grey for inputs */
+            --input-text-light: var(--text-main-light);
+            --input-border-color: #455a64; /* Border for inputs */
+            --input-focus-border-gold: var(--primary-gold);
+
+            --success-bg: #1b4d3e; /* Darker success green */
+            --success-text: #a7d7c5; /* Lighter success text */
+            --success-border: #3c8842; /* Success border */
+            
+            --error-bg: #5d1a1a; /* Darker error red */
+            --error-text: #f4b8b8; /* Lighter error text */
+            --error-border: #b83b3b; /* Error border */
+            
+            --loading-bg: #2a3b4d; /* Darker loading blue/grey */
+            --loading-text: #b0c4de; /* Lighter loading text */
+            --loading-border: #4a6fa5; /* Loading border */
         }
 
         body {
             font-family: 'Rubik', sans-serif;
             margin: 0;
-            color: var(--text-dark);
+            color: var(--text-main-light); /* Default text color for dark theme */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -74,11 +87,16 @@
 
         .moving-particles-layer li {
             position: absolute; display: block;
-            background-color: var(--particle-color);
+            background-color: var(--particle-color); /* Gold particles */
             animation: particle-animation linear infinite;
             bottom: -80px;
             border-radius: 50%;
         }
+        /* Optional: Add some silver particles for variety */
+        .moving-particles-layer li:nth-child(2n) {
+             /* background-color: rgba(192, 192, 192, 0.07); /* Silver particles */
+        }
+
 
         @keyframes particle-animation {
             0% { transform: translateY(0px) scale(0.5); opacity: 0; }
@@ -95,59 +113,97 @@
         .moving-particles-layer li:nth-child(7) { left: 85%; width: 35px; height: 35px; animation-duration: 7s; animation-delay: 1.2s;}
 
         .container {
-            background-color: var(--container-bg);
+            background-color: var(--container-bg-dark);
             padding: 30px 40px;
             border-radius: 12px;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 12px 45px rgba(0, 0, 0, 0.4), 0 0 15px rgba(212, 175, 55, 0.1); /* Dark shadow + subtle gold glow */
             width: 100%;
             max-width: 520px;
             text-align: center;
             z-index: 1;
             margin: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.2); /* Subtle gold border */
+        }
+        
+        .logo-container {
+            margin-bottom: 15px; /* Space below logo */
+        }
+
+        #companyLogo {
+            max-width: 120px; /* Adjust as needed */
+            max-height: 70px; /* Adjust as needed */
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            /* Optional: if TG.gif has a white background, you might want a subtle border */
+            /* border: 1px solid var(--accent-silver); 
+            border-radius: 4px; */
         }
 
         h1 {
-            color: var(--text-dark);
-            margin-bottom: 30px;
+            color: var(--primary-gold); /* Gold color for main heading */
+            margin-bottom: 25px;
             font-size: 2em;
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.3); /* Subtle gold text shadow */
         }
 
         .form-group { margin-bottom: 20px; text-align: right; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-medium); }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 500; 
+            color: var(--text-secondary-light); /* Lighter text for labels */
+        }
         .form-group input[type="text"],
         .form-group input[type="password"],
         .form-group textarea {
             width: 100%; padding: 12px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--input-border-color);
             border-radius: 6px;
             font-size: 1em; font-family: 'Rubik', sans-serif;
-            box-sizing: border-box; background-color: #fff;
+            box-sizing: border-box; 
+            background-color: var(--input-bg-dark); /* Dark background for inputs */
+            color: var(--input-text-light); /* Light text for inputs */
+            transition: border-color 0.3s ease;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="password"]:focus,
+        .form-group textarea:focus {
+            border-color: var(--input-focus-border-gold); /* Gold border on focus */
+            outline: none;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
         }
         .form-group textarea { resize: vertical; min-height: 80px; }
 
         #savedCredentialsInfo { margin-bottom: 20px; text-align: right; }
-        #savedCredentialsInfo p { margin: 0 0 10px 0; font-size: 0.95em; }
-        #savedCredentialsInfo strong { font-weight: 600; color: var(--text-dark); }
+        #savedCredentialsInfo p { margin: 0 0 10px 0; font-size: 0.95em; color: var(--text-secondary-light); }
+        #savedCredentialsInfo strong { font-weight: 600; color: var(--primary-gold); }
         
         .styled-button {
-            background-color: var(--primary-blue); color: white;
+            background-color: var(--primary-gold); color: #111; /* Dark text on gold button */
             padding: 10px 18px; border: none; border-radius: 6px;
-            font-size: 1em; font-family: 'Rubik', sans-serif;
+            font-size: 1em; font-family: 'Rubik', sans-serif; font-weight: 500;
             cursor: pointer; transition: background-color 0.3s ease, transform 0.1s ease;
+            text-shadow: none;
         }
-        .styled-button:hover { background-color: var(--primary-blue-darker); }
+        .styled-button:hover { background-color: var(--primary-gold-darker); }
         .styled-button:active { transform: scale(0.98); }
 
         button[type="submit"] { width: 100%; padding: 12px 20px; font-size: 1.1em; }
-        #changeCredentialsBtn { font-size: 0.9em; background-color: #7f8c8d; }
-        #changeCredentialsBtn:hover { background-color: #6c7a7d; }
+        
+        #changeCredentialsBtn { 
+            font-size: 0.9em; 
+            background-color: var(--accent-silver); 
+            color: var(--dark-bg-1); /* Dark text for silver button */
+        }
+        #changeCredentialsBtn:hover { background-color: var(--accent-silver-darker); }
 
 
         #responseArea {
             margin-top: 20px; padding: 12px; border-radius: 6px;
             font-size: 0.95em; min-height: 20px; word-wrap: break-word;
             text-align: right;
-            white-space: pre-line; /* כדי שתווי \n ייצרו ירידת שורה */
+            white-space: pre-line; 
         }
         #responseArea.success { background-color: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
         #responseArea.error { background-color: var(--error-bg); color: var(--error-text); border: 1px solid var(--error-border); }
@@ -159,44 +215,67 @@
             position: fixed;
             bottom: 15px; left: 15px;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            background-color: var(--accent-silver); /* Silver for floating button */
+            color: var(--dark-bg-1);
+        }
+         .floating-btn:hover {
+            background-color: var(--accent-silver-darker);
         }
 
         .modal {
             display: none; position: fixed;
             z-index: 1001; left: 0; top: 0;
             width: 100%; height: 100%;
-            overflow: auto; background-color: rgba(0,0,0,0.6);
+            overflow: auto; background-color: rgba(0,0,0,0.7); /* Darker overlay */
             padding-top: 60px;
         }
         .modal-content {
-            background-color: #fefefe; margin: 5% auto;
-            padding: 25px; border: 1px solid #888;
+            background-color: var(--dark-bg-2); /* Dark background for modal */
+            margin: 5% auto;
+            padding: 25px; border: 1px solid var(--primary-gold); /* Gold border for modal */
             width: 80%; max-width: 700px;
             border-radius: 8px; position: relative;
             text-align: right;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
         }
         .modal-close-btn {
-            color: #aaa; float: left;
+            color: var(--accent-silver); float: left;
             font-size: 28px; font-weight: bold;
             line-height: 1;
         }
         .modal-close-btn:hover, .modal-close-btn:focus {
-            color: black; text-decoration: none; cursor: pointer;
+            color: var(--primary-gold); /* Gold hover for close button */
+            text-decoration: none; cursor: pointer;
         }
-        .modal h2 { margin-top: 0; color: var(--text-dark); }
+        .modal h2 { 
+            margin-top: 0; 
+            color: var(--primary-gold); /* Gold for modal title */
+            text-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
+        }
         
         .response-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .response-table th, .response-table td {
-            border: 1px solid #ddd; padding: 10px;
+            border: 1px solid var(--input-border-color); /* Darker border for table cells */
+            padding: 10px;
             text-align: right; vertical-align: top;
             word-break: break-all;
+            color: var(--text-secondary-light); /* Light text for table content */
         }
-        .response-table th { background-color: #f2f2f2; color: var(--text-medium); font-weight: 600; }
-        .response-table td:first-child { font-weight: 500; width: 30%; }
-        .response-table pre { white-space: pre-wrap; word-wrap: break-word; margin:0; font-family: 'Rubik', sans-serif; font-size: 0.9em;}
-
-
+        .response-table th { 
+            background-color: var(--input-bg-dark); /* Dark background for table headers */
+            color: var(--primary-gold); /* Gold text for table headers */
+            font-weight: 600; 
+        }
+        .response-table td:first-child { font-weight: 500; width: 30%; color: var(--text-main-light); }
+        .response-table pre { 
+            white-space: pre-wrap; word-wrap: break-word; margin:0; 
+            font-family: 'Rubik', sans-serif; font-size: 0.9em;
+            background-color: rgba(0,0,0,0.2); /* Slightly darker background for preformatted text */
+            padding: 8px;
+            border-radius: 4px;
+            color: var(--text-secondary-light);
+        }
     </style>
 </head>
 <body>
@@ -208,6 +287,9 @@
     </div>
 
     <div class="container">
+        <div class="logo-container">
+            <img src="TG.gif" alt="לוגו" id="companyLogo">
+        </div>
         <h1>שליחת הודעות אישיות</h1>
         
         <div id="savedCredentialsInfo" style="display:none;">
@@ -375,7 +457,7 @@
                     return;
                 }
 
-                if (!confirm("האם אתה בטוח שברצונך לשלוח את ההודעה?")) { // הודעת אישור שונתה
+                if (!confirm("האם אתה בטוח שברצונך לשלוח את ההודעה?")) { 
                     showResponse('שליחת ההודעה בוטלה על ידך.', 'info');
                     return;
                 }
@@ -405,7 +487,7 @@
                 params.append('ttsMode', '1');
                 params.append('phones', JSON.stringify(phonesPayloadObject)); 
 
-                showResponse('שולח הודעה...', 'loading'); // הודעת טעינה שונתה
+                showResponse('שולח הודעה...', 'loading');
 
                 try {
                     const response = await fetch(API_URL, {
@@ -419,19 +501,17 @@
                     showLastResponseBtn.style.display = 'block'; 
 
                     if (responseData.responseStatus === "OK") {
-                        showResponse('ההודעה נשלחה בהצלחה!', 'success'); // הודעת הצלחה שונתה
-                        phonesInput.value = ''; 
-                        messageInput.value = ''; 
+                        showResponse('ההודעה נשלחה בהצלחה!', 'success'); 
+                        // phonesInput.value = ''; // Clear only on success if desired, or keep for resend
+                        // messageInput.value = ''; 
                     } else {
-                        // --- START OF MODIFIED ERROR MESSAGE FORMATTING ---
-                        let errorDisplayMessage = "שגיאה\n"; 
-                        errorDisplayMessage += `תוכן השגיאה: ${responseData.message || 'לא התקבל'}\n`; 
-                        errorDisplayMessage += `קוד שגיאה: ${responseData.messageCode || 'לא התקבל'}`; 
+                        let errorDisplayMessage = "שגיאה בשליחת ההודעה:\n"; 
+                        errorDisplayMessage += `הודעת שרת: ${responseData.message || 'לא התקבלה הודעת שגיאה מפורטת'}\n`; 
+                        errorDisplayMessage += `קוד שגיאה: ${responseData.messageCode || 'לא התקבל קוד שגיאה'}`; 
                         showResponse(errorDisplayMessage, 'error');
-                        // --- END OF MODIFIED ERROR MESSAGE FORMATTING ---
                     }
                 } catch (error) {
-                    console.error('Error sending message:', error); // לוג שונה
+                    console.error('Error sending message (שגיאת תקשורת או API):', error); 
                     const errorResponse = { responseStatus: "CLIENT_ERROR", message: error.message, details: error.toString() };
                     setCookie('call2all_last_response', JSON.stringify(errorResponse), 7);
                     showLastResponseBtn.style.display = 'block';
